@@ -4,4 +4,4 @@ You are free to use this code as you wish. Props to Sebastian Lague and Tarodev 
 
 This script is not finnished and will receive updates!!!
 
-You can use this script as you want!
+You can use the scripts as you want!
