@@ -50,7 +50,9 @@ public class PlayerCollision : MonoBehaviour
     [Range(2, 10)]
     [SerializeField] private int rayCount = 3;
     [Range(0.2f, 5)]
-    [SerializeField] private float minRayLength = 0.5f;
+    [SerializeField] private float horizontalMinRayLength = 0.3f;
+    [Range(0.2f, 5)]
+    [SerializeField] private float verticallMinRayLength = 0.4f;
     [Range(0.05f, 2)]
     [SerializeField] private float rayLengthModifier = 0.05f;
     [SerializeField] private LayerMask collisionMask;
@@ -77,10 +79,10 @@ public class PlayerCollision : MonoBehaviour
     {
         var spacing = GetRaySpacings();
 
-        downCollision.raycastInfo = new RaycastInfo(Vector2.zero, minRayLength, Vector2.down, spacing.y, Vector2.right);
-        upCollision.raycastInfo = new RaycastInfo(Vector2.zero, minRayLength, Vector2.up, spacing.y, Vector2.right);
-        rightCollision.raycastInfo = new RaycastInfo(Vector2.zero, minRayLength, Vector2.right, spacing.x, Vector2.up);
-        leftCollision.raycastInfo = new RaycastInfo(Vector2.zero, minRayLength, Vector2.left, spacing.x, Vector2.up);
+        downCollision.raycastInfo = new RaycastInfo(Vector2.zero, verticallMinRayLength, Vector2.down, spacing.y, Vector2.right);
+        upCollision.raycastInfo = new RaycastInfo(Vector2.zero, verticallMinRayLength, Vector2.up, spacing.y, Vector2.right);
+        rightCollision.raycastInfo = new RaycastInfo(Vector2.zero, horizontalMinRayLength, Vector2.right, spacing.x, Vector2.up);
+        leftCollision.raycastInfo = new RaycastInfo(Vector2.zero, horizontalMinRayLength, Vector2.left, spacing.x, Vector2.up);
     }
 
     public bool IsVerticalliColliding()
@@ -116,15 +118,15 @@ public class PlayerCollision : MonoBehaviour
         CollisionDetection(ref upCollision, rawMovement);
         CollisionDetection(ref downCollision, rawMovement);
 
-        HandleHorizontalCollision(rightCollision, moveDir.x, furthestPoint, ref move, true);
-        HandleHorizontalCollision(leftCollision, moveDir.x, furthestPoint, ref move, true);
-        HandleVerticalCollision(upCollision, moveDir.y, furthestPoint, ref move, true);
-        HandleVerticalCollision(downCollision, moveDir.y, furthestPoint, ref move, true);
+        HandleHorizontalCollision(rightCollision, moveDir.x, furthestPoint, ref move);
+        HandleHorizontalCollision(leftCollision, moveDir.x, furthestPoint, ref move);
+        HandleVerticalCollision(upCollision, moveDir.y, furthestPoint, ref move);
+        HandleVerticalCollision(downCollision, moveDir.y, furthestPoint, ref move);
 
         Debug.DrawLine(_transform.position, furthestPoint, Color.magenta);
     }
 
-    private void HandleVerticalCollision(CollisionInfo collisionInfo, float moveDir, Vector2 furthestPoint, ref Vector2 move, bool recalculate)
+    private void HandleVerticalCollision(CollisionInfo collisionInfo, float moveDir, Vector2 furthestPoint, ref Vector2 move)
     {
         var checkPos = new Vector2(_transform.position.x, furthestPoint.y);
         collisionInfo.colliding = false;
@@ -141,15 +143,14 @@ public class PlayerCollision : MonoBehaviour
                 var reposition = GetVerticalReposition(collisionInfo);
                 var gap = reposition - furthestPoint.y;
 
-                if(recalculate)
-                    move.y += gap;
+                move.y += gap;
 
                 collisionInfo.colliding = true;
             }
         }
     }
 
-    private void HandleHorizontalCollision(CollisionInfo collisionInfo, float moveDir, Vector2 furthestPoint, ref Vector2 move, bool recalculate)
+    private void HandleHorizontalCollision(CollisionInfo collisionInfo, float moveDir, Vector2 furthestPoint, ref Vector2 move)
     {
         var checkPos = new Vector2(furthestPoint.x, _transform.position.y);
         collisionInfo.colliding = false;
@@ -164,8 +165,7 @@ public class PlayerCollision : MonoBehaviour
                 var reposition = GetHorizontalReposition(collisionInfo);
                 var gap = reposition - furthestPoint.x;
 
-                if (recalculate)
-                    move.x += gap;
+                move.x += gap;
 
                 collisionInfo.colliding = true;
             }

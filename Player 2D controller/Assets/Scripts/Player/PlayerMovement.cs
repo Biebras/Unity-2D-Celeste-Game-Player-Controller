@@ -22,7 +22,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpHeight = 3;
     [SerializeField] private float timeToJumpApex = .4f;
 
-    [Header("Jumping")]
+    [Header("Falling")]
     [SerializeField] private float minFallSpeed = 5;
     [SerializeField] private float maxFallSpeed = 20;
 
@@ -121,13 +121,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void JumpPressed()
     {
-        if(playerCollision.downCollision.colliding)
+        if(playerCollision.downCollision.rayHit)
             canJump = true;
     }
 
     private void Jump()
     {
-        if (!canJump)
+        if (!canJump || !playerCollision.downCollision.colliding)
             return;
 
         verticalSpeed = jumpSpeed;
