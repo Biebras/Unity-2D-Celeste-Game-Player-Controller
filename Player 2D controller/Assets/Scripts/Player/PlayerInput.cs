@@ -29,6 +29,16 @@ public class PlayerInput : MonoBehaviour
         return inputActions.Player.Horizontal.ReadValue<float>();
     }
 
+    public bool IsJumpPressed()
+    {
+        return GetJumpValue();
+    }
+
+    private bool GetJumpValue()
+    {
+        return inputActions.Player.Jump.inProgress;
+    }
+
     private void OnDestroy()
     {
         inputActions.Player.Jump.performed -= Jump_performed;

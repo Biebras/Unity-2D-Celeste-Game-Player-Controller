@@ -15,16 +15,20 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Walking")]
     [SerializeField] private float maxMove = 13;
-    [SerializeField] private float acceleration = 90;
-    [SerializeField] private float deceleration = 60f;
+    [SerializeField] private float acceleration = 180;
+    [SerializeField] private float deceleration = 90;
 
     [Header("Jumping")]
-    [SerializeField] private float jumpHeight = 3;
-    [SerializeField] private float timeToJumpApex = .4f;
+    [SerializeField] private float jumpHeight = 5;
+    [SerializeField] private float timeToJumpApex = .3f;
+    [SerializeField] private float jumpFallMultiplayer = 1.5f;
+    [SerializeField] private float lowJumpMultiplayer = 4f;
+    [SerializeField] private float jumpBuffer = 0.1f;
+    [SerializeField] private float coyoteJump = 0.07f;
 
     [Header("Falling")]
-    [SerializeField] private float minFallSpeed = 5;
-    [SerializeField] private float maxFallSpeed = 20;
+    [SerializeField] private float minFallSpeed = 0;
+    [SerializeField] private float maxFallSpeed = 30;
 
     private Vector2 velocity;
     private float gravity;
@@ -34,7 +38,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 furthestPoint;
     private float horizontalSpeed;
     private float verticalSpeed;
-    private bool canJump;
+    private float jumpBufferTimer;
+    private float coyoteJumpTimer;
 
     private Transform _transform;
     private PlayerCollision playerCollision;
@@ -54,7 +59,7 @@ public class PlayerMovement : MonoBehaviour
         SetGravity();
         SetJumpSpeed();
 
-        playerInput.onJumpPressed += JumpPressed;
+        playerInput.onJumpPressed += OnJumpPressed;
     }
 
     private void SetGravity()
@@ -74,6 +79,10 @@ public class PlayerMovement : MonoBehaviour
         CalculateGravity();
 
         Walk();
+
+        CoyoteJump();
+
+        JumpBuffer();
 
         Jump();
 
@@ -100,7 +109,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void CalculateGravity()
     {
-        if(!playerCollision.downCollision.colliding)
+        if(!playerCollision.downCollision.colliding && !CanCoyoteJump())
             verticalSpeed -= gravity * Time.deltaTime;
     }
 
@@ -119,19 +128,55 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void JumpPressed()
+    private void CoyoteJump()
     {
-        if(playerCollision.downCollision.rayHit)
-            canJump = true;
+        if (playerCollision.downCollision.colliding)
+        {
+            coyoteJumpTimer = coyoteJump;
+            return;
+        }
+
+        coyoteJumpTimer -= Time.deltaTime;
+    }
+
+    private void JumpBuffer()
+    {
+        if (verticalSpeed > 0)
+            jumpBufferTimer = 0;
+
+        jumpBufferTimer -= Time.deltaTime;
+    }
+
+    private bool CanJump()
+    {
+        return jumpBufferTimer > 0;
+    }
+
+    private bool CanCoyoteJump()
+    {
+        return coyoteJumpTimer > 0;
+    }
+
+    private void OnJumpPressed()
+    {
+        jumpBufferTimer = jumpBuffer;
     }
 
     private void Jump()
     {
-        if (!canJump || !playerCollision.downCollision.colliding)
-            return;
+        if(CanJump() && playerCollision.downCollision.colliding)
+            verticalSpeed = jumpSpeed;
 
-        verticalSpeed = jumpSpeed;
-        canJump = false;
+        if (CanJump() && CanCoyoteJump())
+        {
+            verticalSpeed = jumpSpeed;
+            coyoteJumpTimer = 0;
+        }
+
+        if (verticalSpeed < 0)
+            verticalSpeed += -gravity * (jumpFallMultiplayer - 1) * Time.deltaTime;
+        else if (verticalSpeed > 0 && !playerInput.IsJumpPressed())
+            verticalSpeed += -gravity * (lowJumpMultiplayer - 1) * Time.deltaTime;
     }
 
     private void ClampSpeedY()
@@ -166,6 +211,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnDestroy()
     {
-        playerInput.onJumpPressed -= JumpPressed;
+        playerInput.onJumpPressed += OnJumpPressed;
     }
 }

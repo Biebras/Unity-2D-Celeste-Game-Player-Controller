@@ -46,13 +46,13 @@ public class PlayerCollision : MonoBehaviour
     [HideInInspector] public CollisionInfo leftCollision;
 
     [Range(0.1f, 0.5f)]
-    [SerializeField] private float skinWidth = 0.015f;
+    [SerializeField] private float skinWidth = 0.15f;
     [Range(2, 10)]
-    [SerializeField] private int rayCount = 3;
+    [SerializeField] private int rayCount = 2;
     [Range(0.2f, 5)]
     [SerializeField] private float horizontalMinRayLength = 0.3f;
     [Range(0.2f, 5)]
-    [SerializeField] private float verticallMinRayLength = 0.4f;
+    [SerializeField] private float verticallMinRayLength = 1f;
     [Range(0.05f, 2)]
     [SerializeField] private float rayLengthModifier = 0.05f;
     [SerializeField] private LayerMask collisionMask;
