@@ -80,10 +80,6 @@ public class PlayerMovement : MonoBehaviour
 
         Walk();
 
-        CoyoteJump();
-
-        JumpBuffer();
-
         Jump();
 
         ClampSpeedY();
@@ -164,7 +160,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump()
     {
-        if(CanJump() && playerCollision.downCollision.colliding)
+        CoyoteJump();
+        JumpBuffer();
+
+        if (CanJump() && playerCollision.downCollision.colliding)
             verticalSpeed = jumpSpeed;
 
         if (CanJump() && CanCoyoteJump())
