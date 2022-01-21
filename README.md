@@ -6,3 +6,4 @@ This script is not finished and will receive updates, thus making the feedback f
 
 # Important
 To make the controller work, you have to install a new Input system! You can install it in the package manager window (Window >> Package Manager).
+If you are adding script to player, don't forget to set up layer masks.
