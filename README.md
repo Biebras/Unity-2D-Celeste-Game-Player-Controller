@@ -6,8 +6,11 @@ This script is not finished and will receive updates, thus making the feedback f
 
 ## Controlls
 Move Left: Left Arrow
+
 Move Right: Right Arrow
+
 Jump: C
+
 Grab: Z
 
 ## Important
