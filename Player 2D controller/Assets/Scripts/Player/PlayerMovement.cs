@@ -19,20 +19,34 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float deceleration = 90;
 
     [Header("Jumping")]
-    [SerializeField] private float jumpHeight = 5;
+    [SerializeField] private float maxJumpHeight = 5;
+    [SerializeField] private float minJumpHeight = 1.7f;
     [SerializeField] private float timeToJumpApex = .3f;
-    [SerializeField] private float jumpFallMultiplayer = 1.5f;
-    [SerializeField] private float lowJumpMultiplayer = 4f;
-    [SerializeField] private float jumpBuffer = 0.1f;
-    [SerializeField] private float coyoteJump = 0.07f;
+    [SerializeField] private float jumpBuffer = 0.2f;
+    [SerializeField] private float coyoteJump = 0.09f;
+
+    [Header("Wall")]
+    [SerializeField] private float wallSlide = 6;
+    [SerializeField] private float wallClimb = 3f;
+    [SerializeField] private float wallStickTime = 0.2f;
+
+    [Header("Wall Grabed")]
+    [SerializeField] private float wallGrabTime = 5;
+    [SerializeField] private float grabDistance = 0.2f;
+    [SerializeField] private float wallGrabJumpApexTime = 0.15f;
+    [SerializeField] private Vector2 topEdgeClimbJump = new Vector2(8, 12);
+    [SerializeField] private Vector2 wallJump = new Vector2(12, 30);
 
     [Header("Falling")]
     [SerializeField] private float minFallSpeed = 0;
-    [SerializeField] private float maxFallSpeed = 30;
+    [SerializeField] private float maxFallSpeed = 40;
 
     private Vector2 velocity;
     private float gravity;
-    private float jumpSpeed;
+    private float maxJumpSpeed;
+    private float minJumpSpeed;
+    private float wallGrabJumpSpeed;
+    private float wallGrabJumpTimer;
     private Vector2 rawMovement;
     private Vector2 lastPosition;
     private Vector2 furthestPoint;
@@ -40,6 +54,10 @@ public class PlayerMovement : MonoBehaviour
     private float verticalSpeed;
     private float jumpBufferTimer;
     private float coyoteJumpTimer;
+    private float wallStickTimer;
+    private float wallGrabTimer;
+    private bool canWallJump;
+    private bool isWallJumping;
 
     private Transform _transform;
     private PlayerCollision playerCollision;
@@ -60,17 +78,24 @@ public class PlayerMovement : MonoBehaviour
         SetJumpSpeed();
 
         playerInput.onJumpPressed += OnJumpPressed;
+        playerInput.onJumpReleased += OnJumpReleased;
     }
+
+    #region Start Functions
 
     private void SetGravity()
     {
-        gravity = 2 * jumpHeight / Mathf.Pow(timeToJumpApex, 2);
+        gravity = 2 * maxJumpHeight / Mathf.Pow(timeToJumpApex, 2);
     }
 
     private void SetJumpSpeed()
     {
-        jumpSpeed = gravity * timeToJumpApex;
+        maxJumpSpeed = gravity * timeToJumpApex;
+        minJumpSpeed = Mathf.Sqrt(2 * gravity * minJumpHeight);
+        wallGrabJumpSpeed = gravity * wallGrabJumpApexTime;
     }
+
+    #endregion
 
     private void Update()
     {
@@ -78,13 +103,16 @@ public class PlayerMovement : MonoBehaviour
 
         CalculateGravity();
 
-        Walk();
+        if(!isWallJumping)
+            Walk();
 
         Jump();
 
+        HandleWallMovement();
+
         ClampSpeedY();
 
-        Move(velocity);
+        Move();
     }
 
     public Vector2 GetVelocity()
@@ -96,6 +124,8 @@ public class PlayerMovement : MonoBehaviour
     {
         return furthestPoint;
     }
+
+    #region Gravity and Velocity
 
     private void CalculateVelocity()
     {
@@ -109,20 +139,19 @@ public class PlayerMovement : MonoBehaviour
             verticalSpeed -= gravity * Time.deltaTime;
     }
 
+    #endregion
+
     private void Walk()
     {
         var input = playerInput.GetHorizontalInput();
 
         if (input != 0)
-        {
-            horizontalSpeed += input * acceleration * Time.deltaTime;
-            horizontalSpeed = Mathf.Clamp(horizontalSpeed, -maxMove, maxMove);
-        }
+            horizontalSpeed = Mathf.MoveTowards(horizontalSpeed, maxMove * input, acceleration * Time.deltaTime);
         else
-        {
             horizontalSpeed = Mathf.MoveTowards(horizontalSpeed, 0, deceleration * Time.deltaTime);
-        }
     }
+
+    #region Jump
 
     private void CoyoteJump()
     {
@@ -156,6 +185,14 @@ public class PlayerMovement : MonoBehaviour
     private void OnJumpPressed()
     {
         jumpBufferTimer = jumpBuffer;
+        wallGrabJumpTimer = wallGrabJumpApexTime;
+        canWallJump = true;
+    }
+
+    private void OnJumpReleased()
+    {
+        if(verticalSpeed > minJumpSpeed)
+            verticalSpeed = minJumpSpeed;
     }
 
     private void Jump()
@@ -164,19 +201,123 @@ public class PlayerMovement : MonoBehaviour
         JumpBuffer();
 
         if (CanJump() && playerCollision.downCollision.colliding)
-            verticalSpeed = jumpSpeed;
+            verticalSpeed = maxJumpSpeed;
 
         if (CanJump() && CanCoyoteJump())
         {
-            verticalSpeed = jumpSpeed;
+            verticalSpeed = maxJumpSpeed;
             coyoteJumpTimer = 0;
         }
+    }
+
+    #endregion
+
+    #region Wall
+
+    private bool IsOnWall()
+    {
+        return !playerCollision.downCollision.colliding && playerCollision.IsHorizontallyColliding();
+    }
+
+    private bool CanGrab()
+    {
+        var right = playerCollision.rightCollision;
+        var left = playerCollision.leftCollision;
+
+        var rightDistance = right.distance < grabDistance && right.rayHit;
+        var leftDistance = left.distance < grabDistance && left.rayHit;
+        var grabPressed = playerInput.IsGrabPressed();
+
+        return (rightDistance || leftDistance) && grabPressed;
+    }
+
+    private void HandleWallMovement()
+    {
+        var inputY = playerInput.GetVerticalInput();
+        var inputX = playerInput.GetHorizontalInput();
+        var collision = playerCollision.GetClosestHorizontal();
+
+        WallSlide();
+        WallJump(collision);
+        WallGrab(collision, inputY);
+        WallGrabJump(collision, inputX);
+
+        if (verticalSpeed <= 0)
+            isWallJumping = false;
+    }
+
+    private void WallSlide()
+    {
+        wallStickTimer -= Time.deltaTime;
+
+        if (!IsOnWall() && wallStickTimer <= 0)
+            return;
+
+        isWallJumping = true;    
 
         if (verticalSpeed < 0)
-            verticalSpeed += -gravity * (jumpFallMultiplayer - 1) * Time.deltaTime;
-        else if (verticalSpeed > 0 && !playerInput.IsJumpPressed())
-            verticalSpeed += -gravity * (lowJumpMultiplayer - 1) * Time.deltaTime;
+            verticalSpeed = -wallSlide;
     }
+
+    private void WallJump(CollisionInfo collision)
+    {
+        if(IsOnWall() && !playerInput.IsGrabPressed() && verticalSpeed < 0)
+        {
+            if(playerInput.IsJumpPressed() && canWallJump)
+            {
+                horizontalSpeed = wallJump.x * -collision.raycastInfo.rayDirection.x;
+                verticalSpeed = wallJump.y;
+                wallStickTimer = wallStickTime;
+                canWallJump = false;
+            }
+        }
+    }
+
+    private void WallGrabJump(CollisionInfo collision, float input)
+    {
+        wallGrabJumpTimer -= Time.deltaTime;
+
+        if (CanGrab() && collision != null)
+        {
+            if(playerInput.IsJumpPressed() && input != 0)
+            {
+                if (collision.raycastInfo.rayDirection.x != input)
+                {
+                    horizontalSpeed = wallJump.x * input;
+                    verticalSpeed = wallJump.y;
+                    return;
+                }
+            }
+            
+            if (playerInput.IsJumpPressed() && wallGrabJumpTimer > 0)
+            {
+                verticalSpeed = wallGrabJumpSpeed;
+            }
+        }
+    }
+
+    private void WallGrab(CollisionInfo collision, float input)
+    {
+        wallGrabTimer -= Time.deltaTime;
+
+        if (playerCollision.downCollision.colliding)
+            wallGrabTimer = wallGrabTime;
+
+        if (CanGrab() && collision != null && wallGrabTimer > 0)
+        {
+            if(collision.firstHit && collision.hitCount == 1)
+            {
+                verticalSpeed = topEdgeClimbJump.y;
+                horizontalSpeed = topEdgeClimbJump.x * collision.raycastInfo.rayDirection.x;
+                return;
+            }
+
+            verticalSpeed = input * wallClimb;
+            horizontalSpeed = 0;
+        }    
+    }
+
+    #endregion
 
     private void ClampSpeedY()
     {
@@ -184,7 +325,7 @@ public class PlayerMovement : MonoBehaviour
             verticalSpeed = Mathf.Clamp(verticalSpeed, -maxFallSpeed, -minFallSpeed);
     }
 
-    private void Move(Vector3 velocity)
+    private void Move()
     {
         var pos = _transform.position;
         rawMovement = new Vector2(horizontalSpeed, verticalSpeed);
@@ -210,6 +351,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnDestroy()
     {
-        playerInput.onJumpPressed += OnJumpPressed;
+        playerInput.onJumpPressed -= OnJumpPressed;
+        playerInput.onJumpReleased -= OnJumpReleased;
     }
 }

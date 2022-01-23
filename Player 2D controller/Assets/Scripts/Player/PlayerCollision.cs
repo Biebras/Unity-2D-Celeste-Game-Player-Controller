@@ -24,6 +24,9 @@ public class RaycastInfo
 public class CollisionInfo
 {
     public bool rayHit;
+    public bool firstHit;
+    public bool lastHit;
+    public int hitCount;
     public Vector2 point;
     public float distance;
     public bool colliding;
@@ -34,6 +37,14 @@ public class CollisionInfo
         this.rayHit = rayHit;
         this.point = point;
         this.distance = distance;
+    }
+
+    public void RestartHits()
+    {
+        rayHit = false;
+        lastHit = false;
+        firstHit = false;
+        hitCount = 0;
     }
 }
 
@@ -95,6 +106,11 @@ public class PlayerCollision : MonoBehaviour
         return Physics2D.OverlapBox(point, size, 0, collisionMask);
     }
 
+    public bool IsHorizontallyColliding()
+    {
+        return rightCollision.colliding || leftCollision.colliding;
+    }
+
     private float GetVerticalReposition(CollisionInfo hit)
     {
         var dir = -hit.raycastInfo.rayDirection.y;
@@ -105,6 +121,28 @@ public class PlayerCollision : MonoBehaviour
     {
         var dir = -hit.raycastInfo.rayDirection.x;
         return hit.point.x + (bounds.size.x / 2 + skinWidth) * dir;
+    }
+
+    public void ForceHorizontalReposition(CollisionInfo collisionInfo)
+    {
+        var pos = _transform.position;
+        var floatX = GetHorizontalReposition(collisionInfo);
+        pos.x = floatX;
+        _transform.position = pos;
+    }
+
+    public CollisionInfo GetClosestHorizontal()
+    {
+        if (!rightCollision.rayHit && !leftCollision.rayHit)
+            return null;
+
+        if (rightCollision.rayHit && !leftCollision.rayHit)
+            return rightCollision;
+
+        if (leftCollision.rayHit && !rightCollision.rayHit)
+            return leftCollision;
+
+        return rightCollision.distance < leftCollision.distance ? rightCollision : leftCollision;
     }
 
     public void HandleCollisions(Vector2 furthestPoint, ref Vector2 move, Vector2 rawMovement)
@@ -144,7 +182,6 @@ public class PlayerCollision : MonoBehaviour
                 var gap = reposition - furthestPoint.y;
 
                 move.y += gap;
-
                 collisionInfo.colliding = true;
             }
         }
@@ -166,7 +203,6 @@ public class PlayerCollision : MonoBehaviour
                 var gap = reposition - furthestPoint.x;
 
                 move.x += gap;
-
                 collisionInfo.colliding = true;
             }
         }
@@ -175,6 +211,7 @@ public class PlayerCollision : MonoBehaviour
     private void CollisionDetection(ref CollisionInfo collisionInfo, Vector2 rawMovement)
     {
         UpdateRaycastStartPoint();
+        collisionInfo.RestartHits();
 
         var info = collisionInfo.raycastInfo;
         var speed = (rawMovement * collisionInfo.raycastInfo.rayDirection).magnitude;
@@ -189,6 +226,13 @@ public class PlayerCollision : MonoBehaviour
             if (!hit)
                 continue;
 
+            if (i == 0)
+                collisionInfo.firstHit = true;
+
+            if (i == rayCount - 1)
+                collisionInfo.lastHit = true;
+
+            collisionInfo.hitCount++;
             lastHit = hit;
             length = lastHit.distance;
         }
