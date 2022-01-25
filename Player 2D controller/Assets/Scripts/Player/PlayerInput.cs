@@ -6,6 +6,7 @@ public class PlayerInput : MonoBehaviour
 {
     public event Action onJumpPressed;
     public event Action onJumpReleased;
+    public event Action onDashPressed;
 
     private PlayerInputActions inputActions;
 
@@ -19,6 +20,12 @@ public class PlayerInput : MonoBehaviour
     {
         inputActions.Player.Jump.performed += JumpPerformed;
         inputActions.Player.Jump.canceled += JumpCanceled;
+        inputActions.Player.Dash.performed += Dash_performed;
+    }
+
+    private void Dash_performed(InputAction.CallbackContext context)
+    {
+        onDashPressed?.Invoke();
     }
 
     private void JumpCanceled(InputAction.CallbackContext context)
@@ -55,5 +62,6 @@ public class PlayerInput : MonoBehaviour
     {
         inputActions.Player.Jump.performed -= JumpPerformed;
         inputActions.Player.Jump.canceled -= JumpCanceled;
+        inputActions.Player.Dash.performed -= Dash_performed;
     }
 }

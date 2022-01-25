@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Hello there, this player controller script was created as a portfolio to get into game industry.
 /// You are free to use this code as you wish. Props to Sebastian Lague and Tarodev as they inspired me to do this project.
-/// Version: 1.0
+/// Version: 1.1
 /// Date: 2020
 /// Created by: Biebras
 /// </summary>
@@ -37,6 +37,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Vector2 topEdgeClimbJump = new Vector2(8, 12);
     [SerializeField] private Vector2 wallJump = new Vector2(12, 30);
 
+    [Header("Dash")]
+    [SerializeField] private float dashDistance = 3f;
+    [SerializeField] private float dashDuration = 0.1f;
+    [SerializeField] private float ySpeedAdterDash = 10;
+
     [Header("Falling")]
     [SerializeField] private float minFallSpeed = 0;
     [SerializeField] private float maxFallSpeed = 40;
@@ -56,8 +61,11 @@ public class PlayerMovement : MonoBehaviour
     private float coyoteJumpTimeLeft;
     private float wallStickTimeLeft;
     private float wallGrabTimeLeft;
+    private float dashTimer;
     private bool canWallJump;
     private bool isWallJumpInProgress;
+    private bool dashJustEnded;
+    private bool canDash = false;
 
     private Transform _transform;
     private PlayerCollision playerCollision;
@@ -79,6 +87,7 @@ public class PlayerMovement : MonoBehaviour
 
         playerInput.onJumpPressed += OnJumpPressed;
         playerInput.onJumpReleased += OnJumpReleased;
+        playerInput.onDashPressed += PlayerInput_onDashPressed;
     }
 
     #region Start Functions
@@ -109,6 +118,8 @@ public class PlayerMovement : MonoBehaviour
         Jump();
 
         HandleWallMovement();
+
+        Dash();
 
         ClampSpeedY();
 
@@ -144,6 +155,8 @@ public class PlayerMovement : MonoBehaviour
 
     #endregion
 
+    #region Walk
+
     private void Walk()
     {
         var input = playerInput.GetHorizontalInput();
@@ -153,6 +166,8 @@ public class PlayerMovement : MonoBehaviour
         else
             horizontalSpeed = Mathf.MoveTowards(horizontalSpeed, 0, deceleration * Time.deltaTime);
     }
+
+    #endregion
 
     #region Jump
 
@@ -320,6 +335,55 @@ public class PlayerMovement : MonoBehaviour
             verticalSpeed = input * wallClimb;
             horizontalSpeed = 0;
         }    
+    }
+
+    #endregion
+
+    #region Dash
+
+    private void PlayerInput_onDashPressed()
+    {
+        if(canDash)
+            dashTimer = dashDuration;
+    }
+
+    private void Dash()
+    {
+        var inputX = playerInput.GetHorizontalInput();
+        var inputY = playerInput.GetVerticalInput();
+        Vector2 dir = new Vector2(inputX, inputY).normalized;
+
+        if (playerCollision.downCollision.colliding)
+            canDash = true;
+
+        dashTimer -= Time.deltaTime;
+
+        if (dashTimer <= 0)
+        {
+            if(!dashJustEnded)
+            {
+                verticalSpeed = ySpeedAdterDash * inputY;
+                dashJustEnded = true;
+            }
+
+            return;
+        }
+            
+
+        var furthestPoint = GetDashFurthestPoint(dir);
+        var hit = playerCollision.GetDashHitPos(dir, furthestPoint);
+        var distnace = Vector2.Distance(_transform.position, hit);
+        var clampDistance = Mathf.Clamp(distnace, 0, dashDistance);
+        var velocity = clampDistance / dashDuration * dir;
+        horizontalSpeed = velocity.x;
+        verticalSpeed = velocity.y;
+        canDash = false;
+        dashJustEnded = false;
+    }
+
+    private Vector2 GetDashFurthestPoint(Vector2 dir)
+    {
+        return (Vector2)_transform.position + dir * dashDistance;
     }
 
     #endregion

@@ -2272,6 +2272,7 @@ MonoBehaviour:
   horizontalMinRayLength: 0.5
   verticallMinRayLength: 1
   rayLengthModifier: 0.05
+  dashHitRadius: 0.25
   collisionMask:
     serializedVersion: 2
     m_Bits: 192
@@ -2303,6 +2304,10 @@ MonoBehaviour:
   wallGrabJumpApexTime: 0.15
   topEdgeClimbJump: {x: 8, y: 12}
   wallJump: {x: 11, y: 20}
+  dashDistance: 3
+  dashDuration: 0.1
+  ySpeedAdterDash: 10
+  canDash: 0
   minFallSpeed: 5
   maxFallSpeed: 40
 --- !u!61 &455008372

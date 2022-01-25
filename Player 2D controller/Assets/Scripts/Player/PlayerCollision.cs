@@ -66,6 +66,7 @@ public class PlayerCollision : MonoBehaviour
     [SerializeField] private float verticallMinRayLength = 1f;
     [Range(0.05f, 2)]
     [SerializeField] private float rayLengthModifier = 0.05f;
+    [SerializeField] private float dashHitRadius = 0.5f;
     [SerializeField] private LayerMask collisionMask;
 
     private Transform _transform;
@@ -129,6 +130,11 @@ public class PlayerCollision : MonoBehaviour
         var floatX = GetHorizontalReposition(collisionInfo);
         pos.x = floatX;
         _transform.position = pos;
+    }
+
+    public Vector2 GetDashHitPos(Vector2 dir, Vector2 furthestPoint)
+    {
+        return GetCircleCastAllHit(dir, furthestPoint, dashHitRadius);
     }
 
     public Vector2 GetCircleCastAllHit(Vector2 dir, Vector2 furthestPoint, float radius)
