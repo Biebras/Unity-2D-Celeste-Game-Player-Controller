@@ -11,6 +11,8 @@ Move Right: Right Arrow
 
 Jump: C
 
+Dash: X
+
 Grab: Z
 
 ## Important
