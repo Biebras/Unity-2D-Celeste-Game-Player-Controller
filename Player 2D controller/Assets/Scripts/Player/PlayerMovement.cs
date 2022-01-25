@@ -52,12 +52,12 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 furthestPoint;
     private float horizontalSpeed;
     private float verticalSpeed;
-    private float jumpBufferTimer;
-    private float coyoteJumpTimer;
-    private float wallStickTimer;
-    private float wallGrabTimer;
+    private float jumpBufferTimeLeft;
+    private float coyoteJumpTimeLeft;
+    private float wallStickTimeLeft;
+    private float wallGrabTimeLeft;
     private bool canWallJump;
-    private bool isWallJumping;
+    private bool isWallJumpInProgress;
 
     private Transform _transform;
     private PlayerCollision playerCollision;
@@ -103,7 +103,7 @@ public class PlayerMovement : MonoBehaviour
 
         CalculateGravity();
 
-        if(!isWallJumping)
+        if(!isWallJumpInProgress)
             Walk();
 
         Jump();
@@ -135,8 +135,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void CalculateGravity()
     {
-        if(!playerCollision.downCollision.colliding && !CanCoyoteJump())
+        if (!playerCollision.downCollision.colliding && !CanCoyoteJump())
             verticalSpeed -= gravity * Time.deltaTime;
+
+        if (playerCollision.IsVerticalliColliding())
+            verticalSpeed = 0;
     }
 
     #endregion
@@ -157,36 +160,38 @@ public class PlayerMovement : MonoBehaviour
     {
         if (playerCollision.downCollision.colliding)
         {
-            coyoteJumpTimer = coyoteJump;
+            coyoteJumpTimeLeft = coyoteJump;
             return;
         }
 
-        coyoteJumpTimer -= Time.deltaTime;
+        coyoteJumpTimeLeft -= Time.deltaTime;
     }
 
     private void JumpBuffer()
     {
         if (verticalSpeed > 0)
-            jumpBufferTimer = 0;
+            jumpBufferTimeLeft = 0;
 
-        jumpBufferTimer -= Time.deltaTime;
+        jumpBufferTimeLeft -= Time.deltaTime;
     }
 
     private bool CanJump()
     {
-        return jumpBufferTimer > 0;
+        return jumpBufferTimeLeft > 0;
     }
 
     private bool CanCoyoteJump()
     {
-        return coyoteJumpTimer > 0;
+        return coyoteJumpTimeLeft > 0;
     }
 
     private void OnJumpPressed()
     {
-        jumpBufferTimer = jumpBuffer;
+        jumpBufferTimeLeft = jumpBuffer;
         wallGrabJumpTimer = wallGrabJumpApexTime;
-        canWallJump = true;
+
+        if(IsOnWall())
+            canWallJump = true;
     }
 
     private void OnJumpReleased()
@@ -206,7 +211,7 @@ public class PlayerMovement : MonoBehaviour
         if (CanJump() && CanCoyoteJump())
         {
             verticalSpeed = maxJumpSpeed;
-            coyoteJumpTimer = 0;
+            coyoteJumpTimeLeft = 0;
         }
     }
 
@@ -243,17 +248,17 @@ public class PlayerMovement : MonoBehaviour
         WallGrabJump(collision, inputX);
 
         if (verticalSpeed <= 0)
-            isWallJumping = false;
+            isWallJumpInProgress = false;
     }
 
     private void WallSlide()
     {
-        wallStickTimer -= Time.deltaTime;
+        wallStickTimeLeft -= Time.deltaTime;
 
-        if (!IsOnWall() && wallStickTimer <= 0)
+        if (!IsOnWall() && wallStickTimeLeft <= 0)
             return;
 
-        isWallJumping = true;    
+        isWallJumpInProgress = true;    
 
         if (verticalSpeed < 0)
             verticalSpeed = -wallSlide;
@@ -263,11 +268,11 @@ public class PlayerMovement : MonoBehaviour
     {
         if(IsOnWall() && !playerInput.IsGrabPressed() && verticalSpeed < 0)
         {
-            if(playerInput.IsJumpPressed() && canWallJump)
+            if(playerInput.IsJumpPressed() && canWallJump && collision.lastHit)
             {
                 horizontalSpeed = wallJump.x * -collision.raycastInfo.rayDirection.x;
                 verticalSpeed = wallJump.y;
-                wallStickTimer = wallStickTime;
+                wallStickTimeLeft = wallStickTime;
                 canWallJump = false;
             }
         }
@@ -298,12 +303,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void WallGrab(CollisionInfo collision, float input)
     {
-        wallGrabTimer -= Time.deltaTime;
+        wallGrabTimeLeft -= Time.deltaTime;
 
         if (playerCollision.downCollision.colliding)
-            wallGrabTimer = wallGrabTime;
+            wallGrabTimeLeft = wallGrabTime;
 
-        if (CanGrab() && collision != null && wallGrabTimer > 0)
+        if (CanGrab() && collision != null && wallGrabTimeLeft > 0)
         {
             if(collision.firstHit && collision.hitCount == 1)
             {
@@ -333,11 +338,6 @@ public class PlayerMovement : MonoBehaviour
         furthestPoint = (Vector2)pos + move;
 
         playerCollision.HandleCollisions(furthestPoint, ref move, rawMovement);
-        
-        if (playerCollision.IsVerticalliColliding())
-        {
-            verticalSpeed = 0;
-        }
 
         _transform.position += (Vector3)move;
     }

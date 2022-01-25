@@ -70,7 +70,6 @@ public class PlayerCollision : MonoBehaviour
 
     private Transform _transform;
     private Bounds bounds;
-
     private BoxCollider2D _collider;
 
     private void Awake()
@@ -123,12 +122,21 @@ public class PlayerCollision : MonoBehaviour
         return hit.point.x + (bounds.size.x / 2 + skinWidth) * dir;
     }
 
-    public void ForceHorizontalReposition(CollisionInfo collisionInfo)
+    //Probablly will delete this function
+    private void ForceHorizontalReposition(CollisionInfo collisionInfo)
     {
         var pos = _transform.position;
         var floatX = GetHorizontalReposition(collisionInfo);
         pos.x = floatX;
         _transform.position = pos;
+    }
+
+    public Vector2 GetCircleCastAllHit(Vector2 dir, Vector2 furthestPoint, float radius)
+    {
+        var dis = Vector2.Distance(_transform.position, furthestPoint);
+        var hits = Physics2D.CircleCastAll(_transform.position, radius,  dir, dis, collisionMask);
+
+        return hits.Length == 0 ? furthestPoint : hits[0].point;
     }
 
     public CollisionInfo GetClosestHorizontal()
@@ -234,7 +242,6 @@ public class PlayerCollision : MonoBehaviour
 
             collisionInfo.hitCount++;
             lastHit = hit;
-            length = lastHit.distance;
         }
 
         collisionInfo.rayHit = lastHit;
@@ -248,7 +255,7 @@ public class PlayerCollision : MonoBehaviour
         }
     }
 
-    public void UpdateRaycastStartPoint()
+    private void UpdateRaycastStartPoint()
     {
         UpdateBounds();
 
