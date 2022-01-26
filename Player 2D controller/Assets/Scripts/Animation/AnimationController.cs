@@ -8,7 +8,9 @@ public class Animation
 {
     public string name;
     public Sprite[] sprites;
-    public float animationSpeed;
+    public float fps;
+    public bool flipX;
+    public bool flipY;
 }
 
 public class AnimationController : MonoBehaviour
@@ -24,6 +26,11 @@ public class AnimationController : MonoBehaviour
             Animation startAnimation = animations[0];
             PlayAnimation(startAnimation.name);
         }
+    }
+
+    public SpriteRenderer GetSpriteRenderer()
+    {
+        return spriteRenderer;
     }
 
     public bool AnimationExist(string name)
@@ -53,13 +60,23 @@ public class AnimationController : MonoBehaviour
 
     private IEnumerator StartAnimation(Animation animation)
     {
-        while(true)
+        spriteRenderer.flipX = animation.flipX;
+        spriteRenderer.flipY = animation.flipY;
+
+        var frames = animation.sprites.Length;
+        var invertTime = animation.fps / frames;
+        var time = Mathf.Pow(invertTime, -1);
+
+        while (true)
         {
-            for (int i = 0; i < animation.sprites.Length; i++)
+            for (int i = 0; i < frames; i++)
             {
                 spriteRenderer.sprite = animation.sprites[i];
-                yield return new WaitForSeconds(1 / animation.animationSpeed);
+                yield return new WaitForSeconds(time);
             }
+
+            if (frames == 1)
+                break;
         }
     }
 }

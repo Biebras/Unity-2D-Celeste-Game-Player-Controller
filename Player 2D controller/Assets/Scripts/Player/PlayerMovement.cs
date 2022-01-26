@@ -46,7 +46,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float minFallSpeed = 0;
     [SerializeField] private float maxFallSpeed = 40;
 
-    private Vector2 velocity;
+    public Vector2 velocity;
     private float gravity;
     private float maxJumpSpeed;
     private float minJumpSpeed;
@@ -234,7 +234,7 @@ public class PlayerMovement : MonoBehaviour
 
     #region Wall
 
-    private bool IsOnWall()
+    public bool IsOnWall()
     {
         return !playerCollision.downCollision.colliding && playerCollision.IsHorizontallyColliding();
     }
