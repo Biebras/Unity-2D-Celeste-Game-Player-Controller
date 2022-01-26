@@ -4,6 +4,8 @@ Hello, this player controller with custom physics was created as a portfolio to 
 
 This script is not finished and will receive updates, thus making the feedback from you guys important!
 
+If you apreciate my work, press star button!!!
+
 ## Controlls
 Move Left: Left Arrow
 
