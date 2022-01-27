@@ -288,13 +288,27 @@ MonoBehaviour:
       rayDirection: {x: 0, y: 0}
       spacing: 0
       spacingDirection: {x: 0, y: 0}
+  platformDownCollision:
+    rayHit: 0
+    firstHit: 0
+    lastHit: 0
+    hitCount: 0
+    point: {x: 0, y: 0}
+    distance: 0
+    colliding: 0
+    raycastInfo:
+      startPoint: {x: 0, y: 0}
+      length: 0
+      rayDirection: {x: 0, y: 0}
+      spacing: 0
+      spacingDirection: {x: 0, y: 0}
   skinWidth: 0.15
   rayCount: 3
   horizontalMinRayLength: 0.5
   verticallMinRayLength: 1
   rayLengthModifier: 0.05
   dashHitRadius: 0.25
-  platformCollRadius: 1
+  platformCollRadius: 0.8
   collisionMask:
     serializedVersion: 2
     m_Bits: 192
@@ -1241,7 +1255,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1663525926}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.15, y: -0.5, z: 0}
+  m_LocalPosition: {x: 0, y: -1.32, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1481355341}
@@ -1314,10 +1328,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05cde3c9b165f454e8940bff1d05212a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xSpeed: 4
-  ySpeed: 0
-  pointA: {x: -5.15, y: -0.5}
-  pointB: {x: 5, y: -0.5}
+  xSpeed: 0
+  ySpeed: 5
+  pointA: {x: 0, y: -1.5}
+  pointB: {x: 0, y: 6}
 --- !u!1 &1746174153
 GameObject:
   m_ObjectHideFlags: 0

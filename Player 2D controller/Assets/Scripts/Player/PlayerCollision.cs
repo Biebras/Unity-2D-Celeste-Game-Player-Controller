@@ -55,6 +55,7 @@ public class PlayerCollision : MonoBehaviour
     [HideInInspector] public CollisionInfo upCollision;
     [HideInInspector] public CollisionInfo rightCollision;
     [HideInInspector] public CollisionInfo leftCollision;
+    [HideInInspector] public CollisionInfo platformDownCollision;
 
     [Range(0.1f, 0.5f)]
     [SerializeField] private float skinWidth = 0.15f;
@@ -92,6 +93,7 @@ public class PlayerCollision : MonoBehaviour
     {
         var spacing = GetRaySpacings();
 
+        platformDownCollision.raycastInfo = new RaycastInfo(Vector2.zero, verticallMinRayLength, Vector2.down, spacing.y, Vector2.right);
         downCollision.raycastInfo = new RaycastInfo(Vector2.zero, verticallMinRayLength, Vector2.down, spacing.y, Vector2.right);
         upCollision.raycastInfo = new RaycastInfo(Vector2.zero, verticallMinRayLength, Vector2.up, spacing.y, Vector2.right);
         rightCollision.raycastInfo = new RaycastInfo(Vector2.zero, horizontalMinRayLength, Vector2.right, spacing.x, Vector2.up);
@@ -138,11 +140,19 @@ public class PlayerCollision : MonoBehaviour
     }
 
     //Probablly will delete this function
-    private void ForceHorizontalReposition(CollisionInfo collisionInfo)
+    public void ForceHorizontalReposition(CollisionInfo collisionInfo)
     {
         var pos = _transform.position;
         var floatX = GetHorizontalReposition(collisionInfo);
         pos.x = floatX;
+        _transform.position = pos;
+    }
+
+    public void ForceVerticalReposition(CollisionInfo collisionInfo)
+    {
+        var pos = _transform.position;
+        var floatY = GetVerticalReposition(collisionInfo);
+        pos.y = floatY;
         _transform.position = pos;
     }
 
@@ -179,10 +189,11 @@ public class PlayerCollision : MonoBehaviour
         moveDir.x = moveDir.x < 0 ? -1 : (moveDir.x > 0 ? 1 : 0);
         moveDir.y = moveDir.y < 0 ? -1 : (moveDir.y > 0 ? 1 : 0);
 
-        CollisionDetection(ref rightCollision, rawMovement);
-        CollisionDetection(ref leftCollision, rawMovement);
-        CollisionDetection(ref upCollision, rawMovement);
-        CollisionDetection(ref downCollision, rawMovement);
+        CollisionDetection(ref rightCollision, rawMovement, false, collisionMask);
+        CollisionDetection(ref leftCollision, rawMovement, false, collisionMask);
+        CollisionDetection(ref upCollision, rawMovement, false, collisionMask);
+        CollisionDetection(ref downCollision, rawMovement, true, collisionMask);
+        CollisionDetection(ref platformDownCollision, rawMovement, true, platformMask);
 
         HandleHorizontalCollision(rightCollision, moveDir.x, furthestPoint, ref move);
         HandleHorizontalCollision(leftCollision, moveDir.x, furthestPoint, ref move);
@@ -236,7 +247,7 @@ public class PlayerCollision : MonoBehaviour
         }
     }
 
-    private void CollisionDetection(ref CollisionInfo collisionInfo, Vector2 rawMovement)
+    private void CollisionDetection(ref CollisionInfo collisionInfo, Vector2 rawMovement, bool modifyLength, LayerMask layerMask)
     {
         UpdateRaycastStartPoint();
         collisionInfo.RestartHits();
@@ -249,7 +260,7 @@ public class PlayerCollision : MonoBehaviour
         for (int i = 0; i < rayCount; i++)
         {
             var origin = info.startPoint + info.spacingDirection * info.spacing * i;
-            RaycastHit2D hit = Physics2D.Raycast(origin, info.rayDirection, length, collisionMask);
+            RaycastHit2D hit = Physics2D.Raycast(origin, info.rayDirection, length, layerMask);
 
             if (!hit)
                 continue;
@@ -259,6 +270,9 @@ public class PlayerCollision : MonoBehaviour
 
             if (i == rayCount - 1)
                 collisionInfo.lastHit = true;
+
+            if (modifyLength)
+                length = hit.distance;
 
             collisionInfo.hitCount++;
             lastHit = hit;
@@ -279,6 +293,7 @@ public class PlayerCollision : MonoBehaviour
     {
         UpdateBounds();
 
+        platformDownCollision.raycastInfo.startPoint = new Vector2(bounds.min.x, bounds.min.y);
         downCollision.raycastInfo.startPoint = new Vector2(bounds.min.x, bounds.min.y);
         upCollision.raycastInfo.startPoint = new Vector2(bounds.min.x, bounds.max.y);
         rightCollision.raycastInfo.startPoint = new Vector2(bounds.max.x, bounds.min.y);

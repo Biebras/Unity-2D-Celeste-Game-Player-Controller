@@ -181,6 +181,21 @@ public class PlayerMovement : MonoBehaviour
 
     #region Jump
 
+    private void OnJumpPressed()
+    {
+        jumpBufferTimeLeft = jumpBuffer;
+        wallGrabJumpTimer = wallGrabJumpApexTime;
+
+        if(IsOnWall())
+            canWallJump = true;
+    }
+
+    private void OnJumpReleased()
+    {
+        if(verticalSpeed > minJumpSpeed)
+            verticalSpeed = minJumpSpeed;
+    }
+
     private void CoyoteJump()
     {
         if (playerCollision.downCollision.colliding)
@@ -208,21 +223,6 @@ public class PlayerMovement : MonoBehaviour
     private bool CanCoyoteJump()
     {
         return coyoteJumpTimeLeft > 0;
-    }
-
-    private void OnJumpPressed()
-    {
-        jumpBufferTimeLeft = jumpBuffer;
-        wallGrabJumpTimer = wallGrabJumpApexTime;
-
-        if(IsOnWall())
-            canWallJump = true;
-    }
-
-    private void OnJumpReleased()
-    {
-        if(verticalSpeed > minJumpSpeed)
-            verticalSpeed = minJumpSpeed;
     }
 
     private void Jump()
@@ -361,6 +361,10 @@ public class PlayerMovement : MonoBehaviour
     {
         var inputX = playerInput.GetHorizontalInput();
         var inputY = playerInput.GetVerticalInput();
+
+        if (inputX == 0 && inputY == 0)
+            inputX = 1;
+
         Vector2 dir = new Vector2(inputX, inputY).normalized;
 
         if (playerCollision.downCollision.colliding)
@@ -424,6 +428,9 @@ public class PlayerMovement : MonoBehaviour
 
         platform = platforms[obj];
 
+        if (!playerCollision.downCollision.colliding && verticalSpeed == 0 && playerCollision.platformDownCollision.rayHit)
+            playerCollision.ForceVerticalReposition(playerCollision.downCollision);
+
         var rawVelocity = platform.GetRawVelocity();
         externalHorizontalSpeed = rawVelocity.x;
         externalVerticalSpeed = rawMovement.y;
@@ -431,7 +438,6 @@ public class PlayerMovement : MonoBehaviour
 
         
     }
-
 
     #endregion
 
