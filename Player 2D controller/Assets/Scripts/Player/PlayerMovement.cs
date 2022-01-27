@@ -57,6 +57,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 furthestPoint;
     private float horizontalSpeed;
     private float verticalSpeed;
+    private float externalHorizontalSpeed;
+    private float externalVerticalSpeed;
     private float jumpBufferTimeLeft;
     private float coyoteJumpTimeLeft;
     private float wallStickTimeLeft;
@@ -66,6 +68,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isWallJumpInProgress;
     private bool dashJustEnded;
     private bool canDash = false;
+    private Dictionary<GameObject, PlatformController> platforms = new Dictionary<GameObject, PlatformController>();
 
     private Transform _transform;
     private PlayerCollision playerCollision;
@@ -121,6 +124,8 @@ public class PlayerMovement : MonoBehaviour
 
         Dash();
 
+        HandleExternalForces();
+
         ClampSpeedY();
 
         Move();
@@ -129,6 +134,11 @@ public class PlayerMovement : MonoBehaviour
     public Vector2 GetVelocity()
     {
         return velocity;
+    }
+
+    public Vector2 GetRawVelocity()
+    {
+        return rawMovement;
     }
 
     public Vector2 GetFurthestPoint()
@@ -388,6 +398,43 @@ public class PlayerMovement : MonoBehaviour
 
     #endregion
 
+    #region External forces
+
+    private void HandleExternalForces()
+    {
+        Platforms();
+    }
+
+    private void Platforms()
+    {
+        GameObject obj;
+        PlatformController platform;
+        var coll = playerCollision.IsOverlapPlatform(out obj);
+        externalHorizontalSpeed = 0;
+        externalVerticalSpeed = 0;
+
+        if (!coll)
+            return;
+
+        if(!platforms.ContainsKey(obj))
+        {
+            platform = obj.GetComponent<PlatformController>();
+            platforms.Add(obj, platform);
+        }
+
+        platform = platforms[obj];
+
+        var rawVelocity = platform.GetRawVelocity();
+        externalHorizontalSpeed = rawVelocity.x;
+        externalVerticalSpeed = rawMovement.y;
+        return;
+
+        
+    }
+
+
+    #endregion
+
     private void ClampSpeedY()
     {
         if(verticalSpeed < 0)
@@ -398,10 +445,11 @@ public class PlayerMovement : MonoBehaviour
     {
         var pos = _transform.position;
         rawMovement = new Vector2(horizontalSpeed, verticalSpeed);
-        var move = rawMovement * Time.deltaTime;
+        var totalMovement = new Vector2(rawMovement.x + externalHorizontalSpeed, rawMovement.y + externalVerticalSpeed);
+        var move = totalMovement * Time.deltaTime;
         furthestPoint = (Vector2)pos + move;
 
-        playerCollision.HandleCollisions(furthestPoint, ref move, rawMovement);
+        playerCollision.HandleCollisions(furthestPoint, ref move, totalMovement);
 
         _transform.position += (Vector3)move;
     }

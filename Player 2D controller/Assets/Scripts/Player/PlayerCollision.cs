@@ -67,7 +67,9 @@ public class PlayerCollision : MonoBehaviour
     [Range(0.05f, 2)]
     [SerializeField] private float rayLengthModifier = 0.05f;
     [SerializeField] private float dashHitRadius = 0.5f;
+    [SerializeField] private float platformCollRadius = 1f;
     [SerializeField] private LayerMask collisionMask;
+    [SerializeField] private LayerMask platformMask;
 
     private Transform _transform;
     private Bounds bounds;
@@ -99,6 +101,18 @@ public class PlayerCollision : MonoBehaviour
     public bool IsVerticalliColliding()
     {
         return downCollision.colliding || upCollision.colliding;
+    }
+
+    public bool IsOverlapPlatform(out GameObject gameObject)
+    {
+        var coll = Physics2D.OverlapCircle(_transform.position, platformCollRadius, platformMask);
+        gameObject = null;
+
+        if (coll)
+            gameObject = coll.gameObject;
+
+
+        return coll;
     }
 
     public bool IsOverlapBox(Vector2 point, Vector2 size)
@@ -294,5 +308,6 @@ public class PlayerCollision : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(transform.position, bounds.size);
+        Gizmos.DrawWireSphere(transform.position, platformCollRadius);
     }
 }

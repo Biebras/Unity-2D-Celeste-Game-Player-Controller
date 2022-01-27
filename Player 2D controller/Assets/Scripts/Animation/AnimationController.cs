@@ -64,8 +64,7 @@ public class AnimationController : MonoBehaviour
         spriteRenderer.flipY = animation.flipY;
 
         var frames = animation.sprites.Length;
-        var invertTime = animation.fps / frames;
-        var time = Mathf.Pow(invertTime, -1);
+        var time = frames / animation.fps;
 
         while (true)
         {

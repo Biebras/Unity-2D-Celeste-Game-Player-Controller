@@ -38,7 +38,7 @@ public class PlayerVisualization : MonoBehaviour
 
     private void WalkAnimation()
     {
-        var velocity = playerMovement.GetVelocity();
+        var velocity = playerMovement.GetRawVelocity();
         var downCollision = playerCollision.downCollision.colliding;
 
         if (!downCollision)
@@ -50,7 +50,7 @@ public class PlayerVisualization : MonoBehaviour
 
     private void JumpAnimation()
     {
-        var velocity = playerMovement.GetVelocity();
+        var velocity = playerMovement.GetRawVelocity();
         var downCollision = playerCollision.downCollision.colliding;
 
         if (downCollision)
@@ -70,7 +70,7 @@ public class PlayerVisualization : MonoBehaviour
 
     private void FlipSprite()
     {
-        var velocity = playerMovement.GetVelocity();
+        var velocity = playerMovement.GetRawVelocity();
 
         if (velocity.x > .1f)
         {
