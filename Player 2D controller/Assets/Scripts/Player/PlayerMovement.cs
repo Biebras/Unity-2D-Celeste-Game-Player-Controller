@@ -382,7 +382,6 @@ public class PlayerMovement : MonoBehaviour
 
             return;
         }
-            
 
         var furthestPoint = GetDashFurthestPoint(dir);
         var hit = playerCollision.GetDashHitPos(dir, furthestPoint);
@@ -413,7 +412,7 @@ public class PlayerMovement : MonoBehaviour
     {
         GameObject obj;
         PlatformController platform;
-        var coll = playerCollision.IsOverlapPlatform(out obj);
+        var coll = playerCollision.OverlapPlatform(out obj);
         externalHorizontalSpeed = 0;
         externalVerticalSpeed = 0;
 
@@ -435,8 +434,6 @@ public class PlayerMovement : MonoBehaviour
         externalHorizontalSpeed = rawVelocity.x;
         externalVerticalSpeed = rawMovement.y;
         return;
-
-        
     }
 
     #endregion

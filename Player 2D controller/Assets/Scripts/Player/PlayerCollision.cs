@@ -56,6 +56,7 @@ public class PlayerCollision : MonoBehaviour
     [HideInInspector] public CollisionInfo rightCollision;
     [HideInInspector] public CollisionInfo leftCollision;
     [HideInInspector] public CollisionInfo platformDownCollision;
+    public event Action<GameObject> onPlayerTriggerInteractables;
 
     [Range(0.1f, 0.5f)]
     [SerializeField] private float skinWidth = 0.15f;
@@ -69,8 +70,10 @@ public class PlayerCollision : MonoBehaviour
     [SerializeField] private float rayLengthModifier = 0.05f;
     [SerializeField] private float dashHitRadius = 0.5f;
     [SerializeField] private float platformCollRadius = 1f;
+    [SerializeField] private float deffaultColRadius = 0.5f;
     [SerializeField] private LayerMask collisionMask;
     [SerializeField] private LayerMask platformMask;
+    [SerializeField] private LayerMask interactablesMask;
 
     private Transform _transform;
     private Bounds bounds;
@@ -89,6 +92,19 @@ public class PlayerCollision : MonoBehaviour
         UpdateRaycastStartPoint();
     }
 
+    private void FixedUpdate()
+    {
+        HandleInteractableCollisions();
+    }
+
+    private void HandleInteractableCollisions()
+    {
+        if (OverlapWithInteractables(out GameObject obj))
+        {
+            onPlayerTriggerInteractables?.Invoke(obj);
+        }
+    }
+
     private void SetUpRaycastInfo()
     {
         var spacing = GetRaySpacings();
@@ -105,16 +121,20 @@ public class PlayerCollision : MonoBehaviour
         return downCollision.colliding || upCollision.colliding;
     }
 
-    public bool IsOverlapPlatform(out GameObject gameObject)
+    public bool OverlapPlatform(out GameObject gameObject)
     {
-        var coll = Physics2D.OverlapCircle(_transform.position, platformCollRadius, platformMask);
-        gameObject = null;
+        var hit = Physics2D.OverlapCircle(_transform.position, platformCollRadius, platformMask);
+        gameObject = hit ? hit.gameObject : null;
 
-        if (coll)
-            gameObject = coll.gameObject;
+        return hit;
+    }
 
+    public bool OverlapWithInteractables(out GameObject obj)
+    {
+        var hit = Physics2D.OverlapCircle(_transform.position, deffaultColRadius, interactablesMask);
+        obj = hit ? hit.gameObject : null;
 
-        return coll;
+        return hit;
     }
 
     public bool IsOverlapBox(Vector2 point, Vector2 size)
@@ -324,5 +344,8 @@ public class PlayerCollision : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(transform.position, bounds.size);
         Gizmos.DrawWireSphere(transform.position, platformCollRadius);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, deffaultColRadius);
     }
 }
