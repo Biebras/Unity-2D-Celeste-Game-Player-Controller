@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,8 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerCollision))]
 public class PlayerMovement : MonoBehaviour
 {
+    public event Action onDash;
+
     [Header("Walking")]
     [SerializeField] private float maxMove = 13;
     [SerializeField] private float acceleration = 180;
@@ -354,7 +357,10 @@ public class PlayerMovement : MonoBehaviour
     private void PlayerInput_onDashPressed()
     {
         if(canDash)
+        {
             dashTimer = dashDuration;
+            onDash?.Invoke();
+        }
     }
 
     private void Dash()

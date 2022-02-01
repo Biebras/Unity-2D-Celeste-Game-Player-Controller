@@ -16,6 +16,7 @@ public class PlayerVisualization : MonoBehaviour
     private PlayerCollision playerCollision;
     private new AnimationController animation;
     private SpriteRenderer spriteRenderer;
+    private ScreenShakeManager screenShake;
 
     private void Awake()
     {
@@ -27,11 +28,14 @@ public class PlayerVisualization : MonoBehaviour
 
     private void Start()
     {
+        screenShake = ScreenShakeManager.singleton;
+
         walkParticlesMain = walkParticles.main;
         walkParticleStartSize.x = walkParticlesMain.startSize.constantMin;
         walkParticleStartSize.y = walkParticlesMain.startSize.constantMax;
-    }
 
+        playerMovement.onDash += PlayerMovement_onDash;
+    }
     private void Update()
     {
         WalkParticles();
@@ -41,6 +45,11 @@ public class PlayerVisualization : MonoBehaviour
         WallAnimation();
         FlipSprite();
         SetAnimation();
+    }
+
+    private void PlayerMovement_onDash()
+    {
+        screenShake.PlayCameraShake("Normal Shake");
     }
 
     private void IDLEAnimation()
