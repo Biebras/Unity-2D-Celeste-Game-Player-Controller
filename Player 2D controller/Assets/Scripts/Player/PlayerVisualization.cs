@@ -4,9 +4,13 @@ using UnityEngine;
 
 public class PlayerVisualization : MonoBehaviour
 {
+    [SerializeField] private ParticleSystem walkParticles;
+
     private string currentAnimation;
     private string lastAnimation;
     private bool lastFlip;
+    private Vector2 walkParticleStartSize;
+    private ParticleSystem.MainModule walkParticlesMain;
 
     private PlayerMovement playerMovement;
     private PlayerCollision playerCollision;
@@ -21,8 +25,16 @@ public class PlayerVisualization : MonoBehaviour
         spriteRenderer = animation.GetSpriteRenderer();
     }
 
+    private void Start()
+    {
+        walkParticlesMain = walkParticles.main;
+        walkParticleStartSize.x = walkParticlesMain.startSize.constantMin;
+        walkParticleStartSize.y = walkParticlesMain.startSize.constantMax;
+    }
+
     private void Update()
     {
+        WalkParticles();
         IDLEAnimation();
         WalkAnimation();
         JumpAnimation();
@@ -34,6 +46,26 @@ public class PlayerVisualization : MonoBehaviour
     private void IDLEAnimation()
     {
         currentAnimation = "IDLE";
+    }
+
+    private void WalkParticles()
+    {
+        var velocity = playerMovement.GetRawVelocity();
+        var downCol = playerCollision.downCollision.colliding;
+
+        if (!downCol)
+        {
+            walkParticlesMain.startSize = 0;
+            return;
+        }
+            
+        if (velocity.x != 0)
+        {
+            var val = walkParticleStartSize;
+            walkParticlesMain.startSize = new ParticleSystem.MinMaxCurve(val.y, val.x);
+        }
+        else
+            walkParticlesMain.startSize = 0;
     }
 
     private void WalkAnimation()
