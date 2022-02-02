@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerVisualization : MonoBehaviour
 {
     [SerializeField] private ParticleSystem walkParticles;
+    [SerializeField] private ParticleSystem jumpParticles;
 
     private string currentAnimation;
     private string lastAnimation;
@@ -35,7 +36,10 @@ public class PlayerVisualization : MonoBehaviour
         walkParticleStartSize.y = walkParticlesMain.startSize.constantMax;
 
         playerMovement.onDash += PlayerMovement_onDash;
+        playerMovement.onJump += PlayerMovement_onJump;
     }
+
+
     private void Update()
     {
         WalkParticles();
@@ -45,6 +49,11 @@ public class PlayerVisualization : MonoBehaviour
         WallAnimation();
         FlipSprite();
         SetAnimation();
+    }
+
+    private void PlayerMovement_onJump()
+    {
+        jumpParticles.Play();
     }
 
     private void PlayerMovement_onDash()

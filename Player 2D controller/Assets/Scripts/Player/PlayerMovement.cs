@@ -15,6 +15,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public event Action onDash;
+    public event Action onJump;
 
     [Header("Walking")]
     [SerializeField] private float maxMove = 13;
@@ -212,7 +213,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void JumpBuffer()
     {
-        if (verticalSpeed > 0)
+        if (verticalSpeed > 0 && playerCollision.downCollision.colliding)
             jumpBufferTimeLeft = 0;
 
         jumpBufferTimeLeft -= Time.deltaTime;
@@ -230,10 +231,17 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump()
     {
+        var downColl = playerCollision.downCollision.colliding;
+
         CoyoteJump();
         JumpBuffer();
 
-        if (CanJump() && playerCollision.downCollision.colliding)
+        if (CanJump() && (downColl || CanCoyoteJump()))
+        {
+            onJump.Invoke();
+        }
+
+        if (CanJump() && downColl)
             verticalSpeed = maxJumpSpeed;
 
         if (CanJump() && CanCoyoteJump())
