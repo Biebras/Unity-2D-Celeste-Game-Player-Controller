@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerVisualization : MonoBehaviour
 {
+    [SerializeField] private Transform flipObject;
     [SerializeField] private ParticleSystem walkParticles;
     [SerializeField] private ParticleSystem jumpParticles;
 
@@ -125,6 +126,7 @@ public class PlayerVisualization : MonoBehaviour
         if (velocity.x > .1f)
         {
             FlipSpriteToLeft(false);
+            FlipObject(false);
             lastFlip = false;
             return;
         }
@@ -132,11 +134,21 @@ public class PlayerVisualization : MonoBehaviour
         if (velocity.x < -.1f)
         {
             FlipSpriteToLeft(true);
+            FlipObject(false);
             lastFlip = true;
             return;
         }
 
         FlipSpriteToLeft(lastFlip);
+        FlipObject(lastFlip);
+    }
+
+    private void FlipObject(bool leftSide)
+    {
+        var scale = flipObject.localScale;
+        scale.x = leftSide ? 1 : -1;
+
+        flipObject.localScale = scale;
     }
 
     private void FlipSpriteToLeft(bool leftSide)
