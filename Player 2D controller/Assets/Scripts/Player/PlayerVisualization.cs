@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class PlayerVisualization : MonoBehaviour
 {
-    [SerializeField] private Transform _flipObject;
     [SerializeField] private ParticleSystem _walkParticles;
     [SerializeField] private ParticleSystem _jumpParticles;
+    [SerializeField] private float _walkSoundDelay = 0.5f;
 
     private string _currentAnimation;
     private string _lastAnimation;
     private bool _lastFlip;
+    private float _walkSoundTimer;
     private Vector2 _walkParticleStartSize;
     private ParticleSystem.MainModule _walkParticlesMain;
 
@@ -19,6 +20,7 @@ public class PlayerVisualization : MonoBehaviour
     private AnimationController _animation;
     private SpriteRenderer _spriteRenderer;
     private ScreenShakeManager _screenShake;
+    private AudioManager _audioManager;
 
     private void Awake()
     {
@@ -31,6 +33,7 @@ public class PlayerVisualization : MonoBehaviour
     private void Start()
     {
         _screenShake = ScreenShakeManager.s_singleton;
+        _audioManager = AudioManager.s_singleton;
 
         _walkParticlesMain = _walkParticles.main;
         _walkParticleStartSize.x = _walkParticlesMain.startSize.constantMin;
@@ -38,8 +41,9 @@ public class PlayerVisualization : MonoBehaviour
 
         _playerMovement.OnDash += OnDash;
         _playerMovement.OnJump += OnJump;
+        _playerMovement.OnLand += OnLand;
+        _playerCollision.OnPlayerTriggerInteractables += OnPlayerTriggerInteractables;
     }
-
 
     private void Update()
     {
@@ -52,14 +56,30 @@ public class PlayerVisualization : MonoBehaviour
         SetAnimation();
     }
 
+    private void OnPlayerTriggerInteractables(GameObject hit)
+    {
+        if(hit.CompareTag("Spykes"))
+        {
+            _audioManager.Play("Death");
+        }
+    }
+
+    private void OnLand()
+    {
+        _jumpParticles.Play();
+        _audioManager.Play("Land");
+    }
+
     private void OnJump()
     {
         _jumpParticles.Play();
+        _audioManager.Play("Jump");
     }
 
     private void OnDash()
     {
         _screenShake.PlayCameraShake("Normal Shake");
+        _audioManager.Play("Dash");
     }
 
     private void IDLEAnimation()
@@ -95,8 +115,21 @@ public class PlayerVisualization : MonoBehaviour
         if (!downCollision)
             return;
 
-        if (velocity.x != 0)
-            _currentAnimation = "Walk";
+        if (velocity.x == 0)
+        {
+            _walkSoundTimer = 0;
+            return;
+        }
+
+        _currentAnimation = "Walk";
+        _walkSoundTimer -= Time.deltaTime;
+
+        if (_walkSoundTimer <= 0)
+        {
+            _audioManager.CheckThenPlay("Footstep");
+            _walkSoundTimer = _walkSoundDelay;
+        }
+        
     }
 
     private void JumpAnimation()
@@ -126,7 +159,6 @@ public class PlayerVisualization : MonoBehaviour
         if (velocity.x > .1f)
         {
             FlipSpriteToLeft(false);
-            FlipObject(false);
             _lastFlip = false;
             return;
         }
@@ -134,21 +166,11 @@ public class PlayerVisualization : MonoBehaviour
         if (velocity.x < -.1f)
         {
             FlipSpriteToLeft(true);
-            FlipObject(false);
             _lastFlip = true;
             return;
         }
 
         FlipSpriteToLeft(_lastFlip);
-        FlipObject(_lastFlip);
-    }
-
-    private void FlipObject(bool leftSide)
-    {
-        var scale = _flipObject.localScale;
-        scale.x = leftSide ? 1 : -1;
-
-        _flipObject.localScale = scale;
     }
 
     private void FlipSpriteToLeft(bool leftSide)
@@ -169,5 +191,7 @@ public class PlayerVisualization : MonoBehaviour
     {
         _playerMovement.OnDash -= OnDash;
         _playerMovement.OnJump -= OnJump;
+        _playerMovement.OnLand -= OnLand;
+        _playerCollision.OnPlayerTriggerInteractables -= OnPlayerTriggerInteractables;
     }
 }

@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
 {
     public event Action OnDash;
     public event Action OnJump;
+    public event Action OnLand;
 
     [Header("Walking")]
     [SerializeField] private float _maxMove = 13;
@@ -72,6 +73,7 @@ public class PlayerMovement : MonoBehaviour
     private bool _isWallJumpInProgress;
     private bool _dashJustEnded;
     private bool _canDash = false;
+    private bool _canLand = false;
     private Dictionary<GameObject, PlatformController> _platforms = new Dictionary<GameObject, PlatformController>();
 
     private Transform _transform;
@@ -229,12 +231,30 @@ public class PlayerMovement : MonoBehaviour
         return _coyoteJumpTimeLeft > 0;
     }
 
+    private void HandleLanding()
+    {
+        var downCol = playerCollision.DownCollision.Colliding;
+
+        if (!downCol)
+        {
+            _canLand = true;
+            return;
+        }
+
+        if (_canLand)
+        {
+            OnLand?.Invoke();
+            _canLand = false;
+        }
+    }
+
     private void Jump()
     {
         var downColl = playerCollision.DownCollision.Colliding;
 
         CoyoteJump();
         JumpBuffer();
+        HandleLanding();
 
         if (CanJump() && (downColl || CanCoyoteJump()))
         {
