@@ -4,22 +4,22 @@ using System;
 
 public class ScreenShakeManager : MonoBehaviour
 {
-    public static ScreenShakeManager singleton;
+    public static ScreenShakeManager s_singleton;
 
-    [SerializeField] private CinemachineVirtualCamera virtualCamera;
-    [SerializeField] private ScreenShake[] screenShakes;
+    [SerializeField] private CinemachineVirtualCamera _virtualCamera;
+    [SerializeField] private ScreenShake[] _screenShakes;
 
-    private ScreenShake currentScreenShake;
-    private float shakeElapsedTime = 0f;
+    private ScreenShake _currentScreenShake;
+    private float _shakeElapsedTime = 0f;
 
-    private CinemachineBasicMultiChannelPerlin virtualCameraNoise;
+    private CinemachineBasicMultiChannelPerlin _virtualCameraNoise;
 
     private void Awake()
     {
-        singleton = this;
+        s_singleton = this;
 
-        if (virtualCamera != null)
-            virtualCameraNoise = virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        if (_virtualCamera != null)
+            _virtualCameraNoise = _virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
     }
 
     private void Update()
@@ -29,30 +29,30 @@ public class ScreenShakeManager : MonoBehaviour
 
     private void HandleScreenShake()
     {
-        if (virtualCameraNoise == null)
+        if (_virtualCameraNoise == null)
             return;
 
-        if (shakeElapsedTime > 0)
+        if (_shakeElapsedTime > 0)
         {
-            shakeElapsedTime -= Time.deltaTime;
+            _shakeElapsedTime -= Time.deltaTime;
             return;
         }
 
-        virtualCameraNoise.m_AmplitudeGain = 0f;
-        shakeElapsedTime = 0f;
+        _virtualCameraNoise.m_AmplitudeGain = 0f;
+        _shakeElapsedTime = 0f;
     }
 
     public void PlayCameraShake(string name)
     {
-        currentScreenShake = GetScreenShake(name);
-        shakeElapsedTime = currentScreenShake.shakeDuration;
-        virtualCameraNoise.m_AmplitudeGain = currentScreenShake.shakeAmplitude;
-        virtualCameraNoise.m_FrequencyGain = currentScreenShake.shakeFrequency;
+        _currentScreenShake = GetScreenShake(name);
+        _shakeElapsedTime = _currentScreenShake.shakeDuration;
+        _virtualCameraNoise.m_AmplitudeGain = _currentScreenShake.shakeAmplitude;
+        _virtualCameraNoise.m_FrequencyGain = _currentScreenShake.shakeFrequency;
     }
 
     private ScreenShake GetScreenShake(string name)
     {
-        ScreenShake screenShake = Array.Find(screenShakes, s => s.name == name);
+        ScreenShake screenShake = Array.Find(_screenShakes, s => s.name == name);
 
         if (screenShake == null)
             throw new Exception("Couldn't find a sound with the name: " + screenShake);

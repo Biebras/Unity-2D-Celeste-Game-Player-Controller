@@ -14,65 +14,65 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerCollision))]
 public class PlayerMovement : MonoBehaviour
 {
-    public event Action onDash;
-    public event Action onJump;
+    public event Action OnDash;
+    public event Action OnJump;
 
     [Header("Walking")]
-    [SerializeField] private float maxMove = 13;
-    [SerializeField] private float acceleration = 180;
-    [SerializeField] private float deceleration = 90;
+    [SerializeField] private float _maxMove = 13;
+    [SerializeField] private float _acceleration = 180;
+    [SerializeField] private float _deceleration = 90;
 
     [Header("Jumping")]
-    [SerializeField] private float maxJumpHeight = 5;
-    [SerializeField] private float minJumpHeight = 1.7f;
-    [SerializeField] private float timeToJumpApex = .3f;
-    [SerializeField] private float jumpBuffer = 0.2f;
-    [SerializeField] private float coyoteJump = 0.09f;
+    [SerializeField] private float _maxJumpHeight = 5;
+    [SerializeField] private float _minJumpHeight = 1.7f;
+    [SerializeField] private float _timeToJumpApex = .3f;
+    [SerializeField] private float _jumpBuffer = 0.2f;
+    [SerializeField] private float _coyoteJump = 0.09f;
 
     [Header("Wall")]
-    [SerializeField] private float wallSlide = 6;
-    [SerializeField] private float wallClimb = 3f;
-    [SerializeField] private float wallStickTime = 0.2f;
+    [SerializeField] private float _wallSlide = 6;
+    [SerializeField] private float _wallClimb = 3f;
+    [SerializeField] private float _wallStickTime = 0.2f;
 
     [Header("Wall Grabed")]
-    [SerializeField] private float wallGrabTime = 5;
-    [SerializeField] private float grabDistance = 0.2f;
-    [SerializeField] private float wallGrabJumpApexTime = 0.15f;
-    [SerializeField] private Vector2 topEdgeClimbJump = new Vector2(8, 12);
-    [SerializeField] private Vector2 wallJump = new Vector2(12, 30);
+    [SerializeField] private float _wallGrabTime = 5;
+    [SerializeField] private float _grabDistance = 0.2f;
+    [SerializeField] private float _wallGrabJumpApexTime = 0.15f;
+    [SerializeField] private Vector2 _topEdgeClimbJump = new Vector2(8, 12);
+    [SerializeField] private Vector2 _wallJump = new Vector2(12, 30);
 
     [Header("Dash")]
-    [SerializeField] private float dashDistance = 3f;
-    [SerializeField] private float dashDuration = 0.1f;
-    [SerializeField] private float ySpeedAdterDash = 10;
+    [SerializeField] private float _dashDistance = 3f;
+    [SerializeField] private float _dashDuration = 0.1f;
+    [SerializeField] private float _ySpeedAdterDash = 10;
 
     [Header("Falling")]
-    [SerializeField] private float minFallSpeed = 0;
-    [SerializeField] private float maxFallSpeed = 40;
+    [SerializeField] private float _minFallSpeed = 0;
+    [SerializeField] private float _maxFallSpeed = 40;
 
-    public Vector2 velocity;
-    private float gravity;
-    private float maxJumpSpeed;
-    private float minJumpSpeed;
-    private float wallGrabJumpSpeed;
-    private float wallGrabJumpTimer;
-    private Vector2 rawMovement;
-    private Vector2 lastPosition;
-    private Vector2 furthestPoint;
-    private float horizontalSpeed;
-    private float verticalSpeed;
-    private float externalHorizontalSpeed;
-    private float externalVerticalSpeed;
-    private float jumpBufferTimeLeft;
-    private float coyoteJumpTimeLeft;
-    private float wallStickTimeLeft;
-    private float wallGrabTimeLeft;
-    private float dashTimer;
-    private bool canWallJump;
-    private bool isWallJumpInProgress;
-    private bool dashJustEnded;
-    private bool canDash = false;
-    private Dictionary<GameObject, PlatformController> platforms = new Dictionary<GameObject, PlatformController>();
+    private Vector2 _velocity;
+    private float _gravity;
+    private float _maxJumpSpeed;
+    private float _minJumpSpeed;
+    private float _wallGrabJumpSpeed;
+    private float _wallGrabJumpTimer;
+    private Vector2 _rawMovement;
+    private Vector2 _lastPosition;
+    private Vector2 _furthestPoint;
+    private float _horizontalSpeed;
+    private float _verticalSpeed;
+    private float _externalHorizontalSpeed;
+    private float _externalVerticalSpeed;
+    private float _jumpBufferTimeLeft;
+    private float _coyoteJumpTimeLeft;
+    private float _wallStickTimeLeft;
+    private float _wallGrabTimeLeft;
+    private float _dashTimer;
+    private bool _canWallJump;
+    private bool _isWallJumpInProgress;
+    private bool _dashJustEnded;
+    private bool _canDash = false;
+    private Dictionary<GameObject, PlatformController> _platforms = new Dictionary<GameObject, PlatformController>();
 
     private Transform _transform;
     private PlayerCollision playerCollision;
@@ -87,7 +87,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        lastPosition = _transform.position;
+        _lastPosition = _transform.position;
 
         SetGravity();
         SetJumpSpeed();
@@ -101,14 +101,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void SetGravity()
     {
-        gravity = 2 * maxJumpHeight / Mathf.Pow(timeToJumpApex, 2);
+        _gravity = 2 * _maxJumpHeight / Mathf.Pow(_timeToJumpApex, 2);
     }
 
     private void SetJumpSpeed()
     {
-        maxJumpSpeed = gravity * timeToJumpApex;
-        minJumpSpeed = Mathf.Sqrt(2 * gravity * minJumpHeight);
-        wallGrabJumpSpeed = gravity * wallGrabJumpApexTime;
+        _maxJumpSpeed = _gravity * _timeToJumpApex;
+        _minJumpSpeed = Mathf.Sqrt(2 * _gravity * _minJumpHeight);
+        _wallGrabJumpSpeed = _gravity * _wallGrabJumpApexTime;
     }
 
     #endregion
@@ -119,7 +119,7 @@ public class PlayerMovement : MonoBehaviour
 
         CalculateGravity();
 
-        if(!isWallJumpInProgress)
+        if(!_isWallJumpInProgress)
             Walk();
 
         Jump();
@@ -137,34 +137,34 @@ public class PlayerMovement : MonoBehaviour
 
     public Vector2 GetVelocity()
     {
-        return velocity;
+        return _velocity;
     }
 
     public Vector2 GetRawVelocity()
     {
-        return rawMovement;
+        return _rawMovement;
     }
 
     public Vector2 GetFurthestPoint()
     {
-        return furthestPoint;
+        return _furthestPoint;
     }
 
     #region Gravity and Velocity
 
     private void CalculateVelocity()
     {
-        velocity = ((Vector2)_transform.position - lastPosition) / Time.deltaTime;
-        lastPosition = _transform.position;
+        _velocity = ((Vector2)_transform.position - _lastPosition) / Time.deltaTime;
+        _lastPosition = _transform.position;
     }
 
     private void CalculateGravity()
     {
-        if (!playerCollision.downCollision.colliding && !CanCoyoteJump())
-            verticalSpeed -= gravity * Time.deltaTime;
+        if (!playerCollision.DownCollision.Colliding && !CanCoyoteJump())
+            _verticalSpeed -= _gravity * Time.deltaTime;
 
         if (playerCollision.IsVerticalliColliding())
-            verticalSpeed = 0;
+            _verticalSpeed = 0;
     }
 
     #endregion
@@ -176,9 +176,9 @@ public class PlayerMovement : MonoBehaviour
         var input = playerInput.GetHorizontalInput();
 
         if (input != 0)
-            horizontalSpeed = Mathf.MoveTowards(horizontalSpeed, maxMove * input, acceleration * Time.deltaTime);
+            _horizontalSpeed = Mathf.MoveTowards(_horizontalSpeed, _maxMove * input, _acceleration * Time.deltaTime);
         else
-            horizontalSpeed = Mathf.MoveTowards(horizontalSpeed, 0, deceleration * Time.deltaTime);
+            _horizontalSpeed = Mathf.MoveTowards(_horizontalSpeed, 0, _deceleration * Time.deltaTime);
     }
 
     #endregion
@@ -187,67 +187,67 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnJumpPressed()
     {
-        jumpBufferTimeLeft = jumpBuffer;
-        wallGrabJumpTimer = wallGrabJumpApexTime;
+        _jumpBufferTimeLeft = _jumpBuffer;
+        _wallGrabJumpTimer = _wallGrabJumpApexTime;
 
         if(IsOnWall())
-            canWallJump = true;
+            _canWallJump = true;
     }
 
     private void OnJumpReleased()
     {
-        if(verticalSpeed > minJumpSpeed)
-            verticalSpeed = minJumpSpeed;
+        if(_verticalSpeed > _minJumpSpeed)
+            _verticalSpeed = _minJumpSpeed;
     }
 
     private void CoyoteJump()
     {
-        if (playerCollision.downCollision.colliding)
+        if (playerCollision.DownCollision.Colliding)
         {
-            coyoteJumpTimeLeft = coyoteJump;
+            _coyoteJumpTimeLeft = _coyoteJump;
             return;
         }
 
-        coyoteJumpTimeLeft -= Time.deltaTime;
+        _coyoteJumpTimeLeft -= Time.deltaTime;
     }
 
     private void JumpBuffer()
     {
-        if (verticalSpeed > 0 && playerCollision.downCollision.colliding)
-            jumpBufferTimeLeft = 0;
+        if (_verticalSpeed > 0 && playerCollision.DownCollision.Colliding)
+            _jumpBufferTimeLeft = 0;
 
-        jumpBufferTimeLeft -= Time.deltaTime;
+        _jumpBufferTimeLeft -= Time.deltaTime;
     }
 
     private bool CanJump()
     {
-        return jumpBufferTimeLeft > 0;
+        return _jumpBufferTimeLeft > 0;
     }
 
     private bool CanCoyoteJump()
     {
-        return coyoteJumpTimeLeft > 0;
+        return _coyoteJumpTimeLeft > 0;
     }
 
     private void Jump()
     {
-        var downColl = playerCollision.downCollision.colliding;
+        var downColl = playerCollision.DownCollision.Colliding;
 
         CoyoteJump();
         JumpBuffer();
 
         if (CanJump() && (downColl || CanCoyoteJump()))
         {
-            onJump.Invoke();
+            OnJump.Invoke();
         }
 
         if (CanJump() && downColl)
-            verticalSpeed = maxJumpSpeed;
+            _verticalSpeed = _maxJumpSpeed;
 
         if (CanJump() && CanCoyoteJump())
         {
-            verticalSpeed = maxJumpSpeed;
-            coyoteJumpTimeLeft = 0;
+            _verticalSpeed = _maxJumpSpeed;
+            _coyoteJumpTimeLeft = 0;
         }
     }
 
@@ -257,16 +257,16 @@ public class PlayerMovement : MonoBehaviour
 
     public bool IsOnWall()
     {
-        return !playerCollision.downCollision.colliding && playerCollision.IsHorizontallyColliding();
+        return !playerCollision.DownCollision.Colliding && playerCollision.IsHorizontallyColliding();
     }
 
     private bool CanGrab()
     {
-        var right = playerCollision.rightCollision;
-        var left = playerCollision.leftCollision;
+        var right = playerCollision.RightCollision;
+        var left = playerCollision.LeftCollision;
 
-        var rightDistance = right.distance < grabDistance && right.rayHit;
-        var leftDistance = left.distance < grabDistance && left.rayHit;
+        var rightDistance = right.Distance < _grabDistance && right.RayHit;
+        var leftDistance = left.Distance < _grabDistance && left.RayHit;
         var grabPressed = playerInput.IsGrabPressed();
 
         return (rightDistance || leftDistance) && grabPressed;
@@ -283,78 +283,78 @@ public class PlayerMovement : MonoBehaviour
         WallGrab(collision, inputY);
         WallGrabJump(collision, inputX);
 
-        if (verticalSpeed <= 0)
-            isWallJumpInProgress = false;
+        if (_verticalSpeed <= 0)
+            _isWallJumpInProgress = false;
     }
 
     private void WallSlide()
     {
-        wallStickTimeLeft -= Time.deltaTime;
+        _wallStickTimeLeft -= Time.deltaTime;
 
-        if (!IsOnWall() && wallStickTimeLeft <= 0)
+        if (!IsOnWall() && _wallStickTimeLeft <= 0)
             return;
 
-        isWallJumpInProgress = true;    
+        _isWallJumpInProgress = true;    
 
-        if (verticalSpeed < 0)
-            verticalSpeed = -wallSlide;
+        if (_verticalSpeed < 0)
+            _verticalSpeed = -_wallSlide;
     }
 
     private void WallJump(CollisionInfo collision)
     {
-        if(IsOnWall() && !playerInput.IsGrabPressed() && verticalSpeed < 0)
+        if(IsOnWall() && !playerInput.IsGrabPressed() && _verticalSpeed < 0)
         {
-            if(playerInput.IsJumpPressed() && canWallJump && collision.lastHit)
+            if(playerInput.IsJumpPressed() && _canWallJump && collision.LastHit)
             {
-                horizontalSpeed = wallJump.x * -collision.raycastInfo.rayDirection.x;
-                verticalSpeed = wallJump.y;
-                wallStickTimeLeft = wallStickTime;
-                canWallJump = false;
+                _horizontalSpeed = _wallJump.x * -collision.RaycastInfo.RayDirection.x;
+                _verticalSpeed = _wallJump.y;
+                _wallStickTimeLeft = _wallStickTime;
+                _canWallJump = false;
             }
         }
     }
 
     private void WallGrabJump(CollisionInfo collision, float input)
     {
-        wallGrabJumpTimer -= Time.deltaTime;
+        _wallGrabJumpTimer -= Time.deltaTime;
 
         if (CanGrab() && collision != null)
         {
             if(playerInput.IsJumpPressed() && input != 0)
             {
-                if (collision.raycastInfo.rayDirection.x != input)
+                if (collision.RaycastInfo.RayDirection.x != input)
                 {
-                    horizontalSpeed = wallJump.x * input;
-                    verticalSpeed = wallJump.y;
+                    _horizontalSpeed = _wallJump.x * input;
+                    _verticalSpeed = _wallJump.y;
                     return;
                 }
             }
             
-            if (playerInput.IsJumpPressed() && wallGrabJumpTimer > 0)
+            if (playerInput.IsJumpPressed() && _wallGrabJumpTimer > 0)
             {
-                verticalSpeed = wallGrabJumpSpeed;
+                _verticalSpeed = _wallGrabJumpSpeed;
             }
         }
     }
 
     private void WallGrab(CollisionInfo collision, float input)
     {
-        wallGrabTimeLeft -= Time.deltaTime;
+        _wallGrabTimeLeft -= Time.deltaTime;
 
-        if (playerCollision.downCollision.colliding)
-            wallGrabTimeLeft = wallGrabTime;
+        if (playerCollision.DownCollision.Colliding)
+            _wallGrabTimeLeft = _wallGrabTime;
 
-        if (CanGrab() && collision != null && wallGrabTimeLeft > 0)
+        if (CanGrab() && collision != null && _wallGrabTimeLeft > 0)
         {
-            if(collision.firstHit && collision.hitCount == 1)
+            if(collision.FirstHit && collision.HitCount == 1)
             {
-                verticalSpeed = topEdgeClimbJump.y;
-                horizontalSpeed = topEdgeClimbJump.x * collision.raycastInfo.rayDirection.x;
+                _verticalSpeed = _topEdgeClimbJump.y;
+                _horizontalSpeed = _topEdgeClimbJump.x * collision.RaycastInfo.RayDirection.x;
                 return;
             }
 
-            verticalSpeed = input * wallClimb;
-            horizontalSpeed = 0;
+            _verticalSpeed = input * _wallClimb;
+            _horizontalSpeed = 0;
         }    
     }
 
@@ -364,10 +364,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void PlayerInput_onDashPressed()
     {
-        if(canDash)
+        if(_canDash)
         {
-            dashTimer = dashDuration;
-            onDash?.Invoke();
+            _dashTimer = _dashDuration;
+            OnDash?.Invoke();
         }
     }
 
@@ -381,17 +381,17 @@ public class PlayerMovement : MonoBehaviour
 
         Vector2 dir = new Vector2(inputX, inputY).normalized;
 
-        if (playerCollision.downCollision.colliding)
-            canDash = true;
+        if (playerCollision.DownCollision.Colliding)
+            _canDash = true;
 
-        dashTimer -= Time.deltaTime;
+        _dashTimer -= Time.deltaTime;
 
-        if (dashTimer <= 0)
+        if (_dashTimer <= 0)
         {
-            if(!dashJustEnded)
+            if(!_dashJustEnded)
             {
-                verticalSpeed = ySpeedAdterDash * inputY;
-                dashJustEnded = true;
+                _verticalSpeed = _ySpeedAdterDash * inputY;
+                _dashJustEnded = true;
             }
 
             return;
@@ -400,17 +400,17 @@ public class PlayerMovement : MonoBehaviour
         var furthestPoint = GetDashFurthestPoint(dir);
         var hit = playerCollision.GetDashHitPos(dir, furthestPoint);
         var distnace = Vector2.Distance(_transform.position, hit);
-        var clampDistance = Mathf.Clamp(distnace, 0, dashDistance);
-        var velocity = clampDistance / dashDuration * dir;
-        horizontalSpeed = velocity.x;
-        verticalSpeed = velocity.y;
-        canDash = false;
-        dashJustEnded = false;
+        var clampDistance = Mathf.Clamp(distnace, 0, _dashDistance);
+        var velocity = clampDistance / _dashDuration * dir;
+        _horizontalSpeed = velocity.x;
+        _verticalSpeed = velocity.y;
+        _canDash = false;
+        _dashJustEnded = false;
     }
 
     private Vector2 GetDashFurthestPoint(Vector2 dir)
     {
-        return (Vector2)_transform.position + dir * dashDistance;
+        return (Vector2)_transform.position + dir * _dashDistance;
     }
 
     #endregion
@@ -427,26 +427,26 @@ public class PlayerMovement : MonoBehaviour
         GameObject obj;
         PlatformController platform;
         var coll = playerCollision.OverlapPlatform(out obj);
-        externalHorizontalSpeed = 0;
-        externalVerticalSpeed = 0;
+        _externalHorizontalSpeed = 0;
+        _externalVerticalSpeed = 0;
 
         if (!coll)
             return;
 
-        if(!platforms.ContainsKey(obj))
+        if(!_platforms.ContainsKey(obj))
         {
             platform = obj.GetComponent<PlatformController>();
-            platforms.Add(obj, platform);
+            _platforms.Add(obj, platform);
         }
 
-        platform = platforms[obj];
+        platform = _platforms[obj];
 
-        if (!playerCollision.downCollision.colliding && verticalSpeed == 0 && playerCollision.platformDownCollision.rayHit)
-            playerCollision.ForceVerticalReposition(playerCollision.downCollision);
+        if (!playerCollision.DownCollision.Colliding && _verticalSpeed == 0 && playerCollision.PlatformDownCollision.RayHit)
+            playerCollision.ForceVerticalReposition(playerCollision.DownCollision);
 
         var rawVelocity = platform.GetRawVelocity();
-        externalHorizontalSpeed = rawVelocity.x;
-        externalVerticalSpeed = rawMovement.y;
+        _externalHorizontalSpeed = rawVelocity.x;
+        _externalVerticalSpeed = _rawMovement.y;
         return;
     }
 
@@ -454,19 +454,19 @@ public class PlayerMovement : MonoBehaviour
 
     private void ClampSpeedY()
     {
-        if(verticalSpeed < 0)
-            verticalSpeed = Mathf.Clamp(verticalSpeed, -maxFallSpeed, -minFallSpeed);
+        if(_verticalSpeed < 0)
+            _verticalSpeed = Mathf.Clamp(_verticalSpeed, -_maxFallSpeed, -_minFallSpeed);
     }
 
     private void Move()
     {
         var pos = _transform.position;
-        rawMovement = new Vector2(horizontalSpeed, verticalSpeed);
-        var totalMovement = new Vector2(rawMovement.x + externalHorizontalSpeed, rawMovement.y + externalVerticalSpeed);
+        _rawMovement = new Vector2(_horizontalSpeed, _verticalSpeed);
+        var totalMovement = new Vector2(_rawMovement.x + _externalHorizontalSpeed, _rawMovement.y + _externalVerticalSpeed);
         var move = totalMovement * Time.deltaTime;
-        furthestPoint = (Vector2)pos + move;
+        _furthestPoint = (Vector2)pos + move;
 
-        playerCollision.HandleCollisions(furthestPoint, ref move, totalMovement);
+        playerCollision.HandleCollisions(_furthestPoint, ref move, totalMovement);
 
         _transform.position += (Vector3)move;
     }
@@ -475,7 +475,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Gizmos.color = Color.yellow;
 
-        Gizmos.DrawWireCube(furthestPoint, Vector2.one);
+        Gizmos.DrawWireCube(_furthestPoint, Vector2.one);
     }
 
     private void OnDestroy()

@@ -4,40 +4,40 @@ using UnityEngine;
 
 public class PlayerVisualization : MonoBehaviour
 {
-    [SerializeField] private Transform flipObject;
-    [SerializeField] private ParticleSystem walkParticles;
-    [SerializeField] private ParticleSystem jumpParticles;
+    [SerializeField] private Transform _flipObject;
+    [SerializeField] private ParticleSystem _walkParticles;
+    [SerializeField] private ParticleSystem _jumpParticles;
 
-    private string currentAnimation;
-    private string lastAnimation;
-    private bool lastFlip;
-    private Vector2 walkParticleStartSize;
-    private ParticleSystem.MainModule walkParticlesMain;
+    private string _currentAnimation;
+    private string _lastAnimation;
+    private bool _lastFlip;
+    private Vector2 _walkParticleStartSize;
+    private ParticleSystem.MainModule _walkParticlesMain;
 
-    private PlayerMovement playerMovement;
-    private PlayerCollision playerCollision;
-    private new AnimationController animation;
-    private SpriteRenderer spriteRenderer;
-    private ScreenShakeManager screenShake;
+    private PlayerMovement _playerMovement;
+    private PlayerCollision _playerCollision;
+    private AnimationController _animation;
+    private SpriteRenderer _spriteRenderer;
+    private ScreenShakeManager _screenShake;
 
     private void Awake()
     {
-        playerMovement = GetComponent<PlayerMovement>();
-        playerCollision = GetComponent<PlayerCollision>();
-        animation = GetComponent<AnimationController>();
-        spriteRenderer = animation.GetSpriteRenderer();
+        _playerMovement = GetComponent<PlayerMovement>();
+        _playerCollision = GetComponent<PlayerCollision>();
+        _animation = GetComponent<AnimationController>();
+        _spriteRenderer = _animation.GetSpriteRenderer();
     }
 
     private void Start()
     {
-        screenShake = ScreenShakeManager.singleton;
+        _screenShake = ScreenShakeManager.s_singleton;
 
-        walkParticlesMain = walkParticles.main;
-        walkParticleStartSize.x = walkParticlesMain.startSize.constantMin;
-        walkParticleStartSize.y = walkParticlesMain.startSize.constantMax;
+        _walkParticlesMain = _walkParticles.main;
+        _walkParticleStartSize.x = _walkParticlesMain.startSize.constantMin;
+        _walkParticleStartSize.y = _walkParticlesMain.startSize.constantMax;
 
-        playerMovement.onDash += PlayerMovement_onDash;
-        playerMovement.onJump += PlayerMovement_onJump;
+        _playerMovement.OnDash += OnDash;
+        _playerMovement.OnJump += OnJump;
     }
 
 
@@ -52,82 +52,82 @@ public class PlayerVisualization : MonoBehaviour
         SetAnimation();
     }
 
-    private void PlayerMovement_onJump()
+    private void OnJump()
     {
-        jumpParticles.Play();
+        _jumpParticles.Play();
     }
 
-    private void PlayerMovement_onDash()
+    private void OnDash()
     {
-        screenShake.PlayCameraShake("Normal Shake");
+        _screenShake.PlayCameraShake("Normal Shake");
     }
 
     private void IDLEAnimation()
     {
-        currentAnimation = "IDLE";
+        _currentAnimation = "IDLE";
     }
 
     private void WalkParticles()
     {
-        var velocity = playerMovement.GetRawVelocity();
-        var downCol = playerCollision.downCollision.colliding;
+        var velocity = _playerMovement.GetRawVelocity();
+        var downCol = _playerCollision.DownCollision.Colliding;
 
         if (!downCol)
         {
-            walkParticlesMain.startSize = 0;
+            _walkParticlesMain.startSize = 0;
             return;
         }
             
         if (velocity.x != 0)
         {
-            var val = walkParticleStartSize;
-            walkParticlesMain.startSize = new ParticleSystem.MinMaxCurve(val.y, val.x);
+            var val = _walkParticleStartSize;
+            _walkParticlesMain.startSize = new ParticleSystem.MinMaxCurve(val.y, val.x);
         }
         else
-            walkParticlesMain.startSize = 0;
+            _walkParticlesMain.startSize = 0;
     }
 
     private void WalkAnimation()
     {
-        var velocity = playerMovement.GetRawVelocity();
-        var downCollision = playerCollision.downCollision.colliding;
+        var velocity = _playerMovement.GetRawVelocity();
+        var downCollision = _playerCollision.DownCollision.Colliding;
 
         if (!downCollision)
             return;
 
         if (velocity.x != 0)
-            currentAnimation = "Walk";
+            _currentAnimation = "Walk";
     }
 
     private void JumpAnimation()
     {
-        var velocity = playerMovement.GetRawVelocity();
-        var downCollision = playerCollision.downCollision.colliding;
+        var velocity = _playerMovement.GetRawVelocity();
+        var downCollision = _playerCollision.DownCollision.Colliding;
 
         if (downCollision)
             return;
 
         if (velocity.y > .1f)
-            currentAnimation = "Jump";
+            _currentAnimation = "Jump";
         if (velocity.y < -.1f)
-            currentAnimation = "Fall";
+            _currentAnimation = "Fall";
     }
 
     private void WallAnimation()
     {
-        if (playerMovement.IsOnWall())
-            currentAnimation = "Wall";
+        if (_playerMovement.IsOnWall())
+            _currentAnimation = "Wall";
     }
 
     private void FlipSprite()
     {
-        var velocity = playerMovement.GetRawVelocity();
+        var velocity = _playerMovement.GetRawVelocity();
 
         if (velocity.x > .1f)
         {
             FlipSpriteToLeft(false);
             FlipObject(false);
-            lastFlip = false;
+            _lastFlip = false;
             return;
         }
 
@@ -135,33 +135,39 @@ public class PlayerVisualization : MonoBehaviour
         {
             FlipSpriteToLeft(true);
             FlipObject(false);
-            lastFlip = true;
+            _lastFlip = true;
             return;
         }
 
-        FlipSpriteToLeft(lastFlip);
-        FlipObject(lastFlip);
+        FlipSpriteToLeft(_lastFlip);
+        FlipObject(_lastFlip);
     }
 
     private void FlipObject(bool leftSide)
     {
-        var scale = flipObject.localScale;
+        var scale = _flipObject.localScale;
         scale.x = leftSide ? 1 : -1;
 
-        flipObject.localScale = scale;
+        _flipObject.localScale = scale;
     }
 
     private void FlipSpriteToLeft(bool leftSide)
     {
-        spriteRenderer.flipX = leftSide;
+        _spriteRenderer.flipX = leftSide;
     }
 
     private void SetAnimation()
     {
-        if (currentAnimation == lastAnimation)
+        if (_currentAnimation == _lastAnimation)
             return;
 
-        animation.PlayAnimation(currentAnimation);
-        lastAnimation = currentAnimation;
+        _animation.PlayAnimation(_currentAnimation);
+        _lastAnimation = _currentAnimation;
+    }
+
+    private void OnDestroy()
+    {
+        _playerMovement.OnDash -= OnDash;
+        _playerMovement.OnJump -= OnJump;
     }
 }

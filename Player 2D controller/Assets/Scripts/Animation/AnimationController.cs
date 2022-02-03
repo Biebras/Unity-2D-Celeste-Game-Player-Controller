@@ -6,36 +6,36 @@ using UnityEngine;
 [Serializable]
 public class Animation
 {
-    public string name;
-    public Sprite[] sprites;
-    public float fps;
-    public bool flipX;
-    public bool flipY;
+    public string Name;
+    public Sprite[] Sprites;
+    public float Fps;
+    public bool FlipX;
+    public bool FlipY;
 }
 
 public class AnimationController : MonoBehaviour
 {
-    [SerializeField] private SpriteRenderer spriteRenderer;
-    [SerializeField] private Animation[] animations;
-    [SerializeField] private bool playOnStart; 
+    [SerializeField] private SpriteRenderer _spriteRenderer;
+    [SerializeField] private Animation[] _animations;
+    [SerializeField] private bool _playOnStart; 
 
     private void Start()
     {
-        if(playOnStart)
+        if(_playOnStart)
         {
-            Animation startAnimation = animations[0];
-            PlayAnimation(startAnimation.name);
+            Animation startAnimation = _animations[0];
+            PlayAnimation(startAnimation.Name);
         }
     }
 
     public SpriteRenderer GetSpriteRenderer()
     {
-        return spriteRenderer;
+        return _spriteRenderer;
     }
 
     public bool AnimationExist(string name)
     {
-        Animation animation = Array.Find(animations, s => s.name == name);
+        Animation animation = Array.Find(_animations, s => s.Name == name);
 
         return animation != null;
     }
@@ -49,7 +49,7 @@ public class AnimationController : MonoBehaviour
 
     private Animation GetAnimation(string name)
     {
-        Animation animation = Array.Find(animations, s => s.name == name);
+        Animation animation = Array.Find(_animations, s => s.Name == name);
 
         if (animation == null)
             throw new Exception("Couldn't find animation with the name: " + name);
@@ -60,17 +60,17 @@ public class AnimationController : MonoBehaviour
 
     private IEnumerator StartAnimation(Animation animation)
     {
-        spriteRenderer.flipX = animation.flipX;
-        spriteRenderer.flipY = animation.flipY;
+        _spriteRenderer.flipX = animation.FlipX;
+        _spriteRenderer.flipY = animation.FlipY;
 
-        var frames = animation.sprites.Length;
-        var time = frames / animation.fps;
+        var frames = animation.Sprites.Length;
+        var time = frames / animation.Fps;
 
         while (true)
         {
             for (int i = 0; i < frames; i++)
             {
-                spriteRenderer.sprite = animation.sprites[i];
+                _spriteRenderer.sprite = animation.Sprites[i];
                 yield return new WaitForSeconds(time);
             }
 

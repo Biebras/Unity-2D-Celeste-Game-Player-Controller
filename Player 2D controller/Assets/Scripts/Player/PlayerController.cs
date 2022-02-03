@@ -4,32 +4,32 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public Transform checkpoint;
+    [SerializeField] private Transform _checkpoint;
 
     private Transform _transform;
-    private PlayerCollision playerCollision;
+    private PlayerCollision _playerCollision;
 
     private void Awake()
     {
         _transform = transform;
-        playerCollision = GetComponent<PlayerCollision>();
+        _playerCollision = GetComponent<PlayerCollision>();
     }
 
     private void Start()
     {
-        _transform.position = checkpoint.position;
+        _transform.position = _checkpoint.position;
 
-        playerCollision.onPlayerTriggerInteractables += OnPlayerTriggerInteractables;   
+        _playerCollision.OnPlayerTriggerInteractables += OnPlayerTriggerInteractables;   
     }
 
     private void OnPlayerTriggerInteractables(GameObject hit)
     {
         if(hit.CompareTag("Spykes"))
-            _transform.position = checkpoint.position;
+            _transform.position = _checkpoint.position;
     }
 
     private void OnDestroy()
     {
-        playerCollision.onPlayerTriggerInteractables -= OnPlayerTriggerInteractables;
+        _playerCollision.OnPlayerTriggerInteractables -= OnPlayerTriggerInteractables;
     }
 }

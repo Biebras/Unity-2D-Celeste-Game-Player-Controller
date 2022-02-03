@@ -5038,24 +5038,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbc60a21e777744cba81df3fa8feb0e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 1585240474}
-  animations:
-  - name: IDLE
-    sprites:
-    - {fileID: -8187355101989356663, guid: d256d0d433f0d4ce58c19ce0c184ecd3, type: 3}
-    - {fileID: 3854939560234354291, guid: d256d0d433f0d4ce58c19ce0c184ecd3, type: 3}
-    - {fileID: -2176918498148329165, guid: d256d0d433f0d4ce58c19ce0c184ecd3, type: 3}
-    - {fileID: -1878543983233424424, guid: d256d0d433f0d4ce58c19ce0c184ecd3, type: 3}
-    - {fileID: 5249495973877922429, guid: d256d0d433f0d4ce58c19ce0c184ecd3, type: 3}
-    - {fileID: 7294162130811222863, guid: d256d0d433f0d4ce58c19ce0c184ecd3, type: 3}
-    - {fileID: 5907192917678821646, guid: d256d0d433f0d4ce58c19ce0c184ecd3, type: 3}
-    - {fileID: -3698963325330885405, guid: d256d0d433f0d4ce58c19ce0c184ecd3, type: 3}
-    - {fileID: -7168325035351650290, guid: d256d0d433f0d4ce58c19ce0c184ecd3, type: 3}
-    - {fileID: -8728669653598591988, guid: d256d0d433f0d4ce58c19ce0c184ecd3, type: 3}
-    fps: 300
-    flipX: 0
-    flipY: 0
-  playOnStart: 1
+  _spriteRenderer: {fileID: 0}
+  _animations: []
+  _playOnStart: 0
 --- !u!1 &363686784
 GameObject:
   m_ObjectHideFlags: 0
@@ -5166,91 +5151,91 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad7d4e294f89e4fd289909a5c3d0cf7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  downCollision:
-    rayHit: 0
-    firstHit: 0
-    lastHit: 0
-    hitCount: 0
-    point: {x: 0, y: 0}
-    distance: 0
-    colliding: 0
-    raycastInfo:
-      startPoint: {x: 0, y: 0}
-      length: 0
-      rayDirection: {x: 0, y: 0}
-      spacing: 0
-      spacingDirection: {x: 0, y: 0}
-  upCollision:
-    rayHit: 0
-    firstHit: 0
-    lastHit: 0
-    hitCount: 0
-    point: {x: 0, y: 0}
-    distance: 0
-    colliding: 0
-    raycastInfo:
-      startPoint: {x: 0, y: 0}
-      length: 0
-      rayDirection: {x: 0, y: 0}
-      spacing: 0
-      spacingDirection: {x: 0, y: 0}
-  rightCollision:
-    rayHit: 0
-    firstHit: 0
-    lastHit: 0
-    hitCount: 0
-    point: {x: 0, y: 0}
-    distance: 0
-    colliding: 0
-    raycastInfo:
-      startPoint: {x: 0, y: 0}
-      length: 0
-      rayDirection: {x: 0, y: 0}
-      spacing: 0
-      spacingDirection: {x: 0, y: 0}
-  leftCollision:
-    rayHit: 0
-    firstHit: 0
-    lastHit: 0
-    hitCount: 0
-    point: {x: 0, y: 0}
-    distance: 0
-    colliding: 0
-    raycastInfo:
-      startPoint: {x: 0, y: 0}
-      length: 0
-      rayDirection: {x: 0, y: 0}
-      spacing: 0
-      spacingDirection: {x: 0, y: 0}
-  platformDownCollision:
-    rayHit: 0
-    firstHit: 0
-    lastHit: 0
-    hitCount: 0
-    point: {x: 0, y: 0}
-    distance: 0
-    colliding: 0
-    raycastInfo:
-      startPoint: {x: 0, y: 0}
-      length: 0
-      rayDirection: {x: 0, y: 0}
-      spacing: 0
-      spacingDirection: {x: 0, y: 0}
-  skinWidth: 0.15
-  rayCount: 3
-  horizontalMinRayLength: 0.5
-  verticallMinRayLength: 1
-  rayLengthModifier: 0.05
-  dashHitRadius: 0.25
-  platformCollRadius: 0.8
-  deffaultColRadius: 0.5
-  collisionMask:
+  DownCollision:
+    RayHit: 0
+    FirstHit: 0
+    LastHit: 0
+    HitCount: 0
+    Point: {x: 0, y: 0}
+    Distance: 0
+    Colliding: 0
+    RaycastInfo:
+      StartPoint: {x: 0, y: 0}
+      Length: 0
+      RayDirection: {x: 0, y: 0}
+      Spacing: 0
+      SpacingDirection: {x: 0, y: 0}
+  UpCollision:
+    RayHit: 0
+    FirstHit: 0
+    LastHit: 0
+    HitCount: 0
+    Point: {x: 0, y: 0}
+    Distance: 0
+    Colliding: 0
+    RaycastInfo:
+      StartPoint: {x: 0, y: 0}
+      Length: 0
+      RayDirection: {x: 0, y: 0}
+      Spacing: 0
+      SpacingDirection: {x: 0, y: 0}
+  RightCollision:
+    RayHit: 0
+    FirstHit: 0
+    LastHit: 0
+    HitCount: 0
+    Point: {x: 0, y: 0}
+    Distance: 0
+    Colliding: 0
+    RaycastInfo:
+      StartPoint: {x: 0, y: 0}
+      Length: 0
+      RayDirection: {x: 0, y: 0}
+      Spacing: 0
+      SpacingDirection: {x: 0, y: 0}
+  LeftCollision:
+    RayHit: 0
+    FirstHit: 0
+    LastHit: 0
+    HitCount: 0
+    Point: {x: 0, y: 0}
+    Distance: 0
+    Colliding: 0
+    RaycastInfo:
+      StartPoint: {x: 0, y: 0}
+      Length: 0
+      RayDirection: {x: 0, y: 0}
+      Spacing: 0
+      SpacingDirection: {x: 0, y: 0}
+  PlatformDownCollision:
+    RayHit: 0
+    FirstHit: 0
+    LastHit: 0
+    HitCount: 0
+    Point: {x: 0, y: 0}
+    Distance: 0
+    Colliding: 0
+    RaycastInfo:
+      StartPoint: {x: 0, y: 0}
+      Length: 0
+      RayDirection: {x: 0, y: 0}
+      Spacing: 0
+      SpacingDirection: {x: 0, y: 0}
+  _skinWidth: 0.15
+  _rayCount: 3
+  _horizontalMinRayLength: 0.3
+  _verticallMinRayLength: 0.3
+  _rayLengthModifier: 0.05
+  _dashHitRadius: 0.25
+  _platformCollRadius: 0.8
+  _deffaultColRadius: 0.5
+  _collisionMask:
     serializedVersion: 2
     m_Bits: 192
-  platformMask:
+  _platformMask:
     serializedVersion: 2
     m_Bits: 128
-  interactablesMask:
+  _interactablesMask:
     serializedVersion: 2
     m_Bits: 1024
 --- !u!114 &455008371
@@ -5265,28 +5250,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2641d33339514411db9c1e5e6c530476, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxMove: 10
-  acceleration: 180
-  deceleration: 180
-  maxJumpHeight: 3
-  minJumpHeight: 1
-  timeToJumpApex: 0.3
-  jumpBuffer: 0.2
-  coyoteJump: 0.09
-  wallSlide: 6
-  wallClimb: 5
-  wallStickTime: 0.2
-  wallGrabTime: 3
-  grabDistance: 0.2
-  wallGrabJumpApexTime: 0.15
-  topEdgeClimbJump: {x: 6, y: 10}
-  wallJump: {x: 11, y: 20}
-  dashDistance: 3
-  dashDuration: 0.1
-  ySpeedAdterDash: 10
-  minFallSpeed: 5
-  maxFallSpeed: 40
-  velocity: {x: 0, y: 0}
+  _maxMove: 13
+  _acceleration: 180
+  _deceleration: 90
+  _maxJumpHeight: 3
+  _minJumpHeight: 1.2
+  _timeToJumpApex: 0.3
+  _jumpBuffer: 0.1
+  _coyoteJump: 0.1
+  _wallSlide: 6
+  _wallClimb: 3.5
+  _wallStickTime: 0.3
+  _wallGrabTime: 4
+  _grabDistance: 0.2
+  _wallGrabJumpApexTime: 0.15
+  _topEdgeClimbJump: {x: 8, y: 12}
+  _wallJump: {x: 12, y: 30}
+  _dashDistance: 3
+  _dashDuration: 0.1
+  _ySpeedAdterDash: 10
+  _minFallSpeed: 8
+  _maxFallSpeed: 40
 --- !u!61 &455008372
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5352,10 +5336,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbc60a21e777744cba81df3fa8feb0e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 716140665}
-  animations:
-  - name: IDLE
-    sprites:
+  _spriteRenderer: {fileID: 716140665}
+  _animations:
+  - Name: IDLE
+    Sprites:
     - {fileID: -6367560908665664636, guid: d1cb0613d568a47279a5f125d0802f20, type: 3}
     - {fileID: -6056987297122131021, guid: d1cb0613d568a47279a5f125d0802f20, type: 3}
     - {fileID: 8416797952724722639, guid: d1cb0613d568a47279a5f125d0802f20, type: 3}
@@ -5367,11 +5351,11 @@ MonoBehaviour:
     - {fileID: -2526832996998184344, guid: d1cb0613d568a47279a5f125d0802f20, type: 3}
     - {fileID: 4392827059107796345, guid: d1cb0613d568a47279a5f125d0802f20, type: 3}
     - {fileID: -1363835404106015672, guid: d1cb0613d568a47279a5f125d0802f20, type: 3}
-    fps: 300
-    flipX: 0
-    flipY: 0
-  - name: Walk
-    sprites:
+    Fps: 300
+    FlipX: 0
+    FlipY: 0
+  - Name: Walk
+    Sprites:
     - {fileID: 7166236263522030466, guid: 14bb080c5e5f04525aa667ca9b38d0db, type: 3}
     - {fileID: 2470319409956435798, guid: 14bb080c5e5f04525aa667ca9b38d0db, type: 3}
     - {fileID: -4540918584354326388, guid: 14bb080c5e5f04525aa667ca9b38d0db, type: 3}
@@ -5384,32 +5368,32 @@ MonoBehaviour:
     - {fileID: 241620830004830169, guid: 14bb080c5e5f04525aa667ca9b38d0db, type: 3}
     - {fileID: -362971539341918764, guid: 14bb080c5e5f04525aa667ca9b38d0db, type: 3}
     - {fileID: 2178398316516280758, guid: 14bb080c5e5f04525aa667ca9b38d0db, type: 3}
-    fps: 300
-    flipX: 0
-    flipY: 0
-  - name: Jump
-    sprites:
+    Fps: 300
+    FlipX: 0
+    FlipY: 0
+  - Name: Jump
+    Sprites:
     - {fileID: 21300000, guid: 6a3c040ad42474fa998887aceb9560b8, type: 3}
-    fps: 24
-    flipX: 0
-    flipY: 0
-  - name: Fall
-    sprites:
+    Fps: 0
+    FlipX: 0
+    FlipY: 0
+  - Name: Fall
+    Sprites:
     - {fileID: 21300000, guid: b5252e406f3ea4d73924ce0b0f94ac5e, type: 3}
-    fps: 24
-    flipX: 0
-    flipY: 0
-  - name: Wall
-    sprites:
+    Fps: 0
+    FlipX: 0
+    FlipY: 0
+  - Name: Wall
+    Sprites:
     - {fileID: 3974224528455760076, guid: 2bea79f5062a44ba1b3b31b5583b3d3a, type: 3}
     - {fileID: 403085039841989221, guid: 2bea79f5062a44ba1b3b31b5583b3d3a, type: 3}
     - {fileID: -6018873884784744797, guid: 2bea79f5062a44ba1b3b31b5583b3d3a, type: 3}
     - {fileID: -674972067355074983, guid: 2bea79f5062a44ba1b3b31b5583b3d3a, type: 3}
     - {fileID: 4366178942990776957, guid: 2bea79f5062a44ba1b3b31b5583b3d3a, type: 3}
-    fps: 300
-    flipX: 0
-    flipY: 0
-  playOnStart: 1
+    Fps: 0
+    FlipX: 0
+    FlipY: 0
+  _playOnStart: 0
 --- !u!114 &455008376
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5422,9 +5406,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c3bdb23a3b4a4f328ecec5a3b800253, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flipObject: {fileID: 1170521260}
-  walkParticles: {fileID: 2120060635}
-  jumpParticles: {fileID: 200979522}
+  _flipObject: {fileID: 1170521260}
+  _walkParticles: {fileID: 2120060635}
+  _jumpParticles: {fileID: 200979522}
 --- !u!114 &455008377
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5437,7 +5421,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c064852afcbc24107a6546fd347bcdca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkpoint: {fileID: 233089828}
+  _checkpoint: {fileID: 233089828}
 --- !u!1 &471046959
 GameObject:
   m_ObjectHideFlags: 0
@@ -5467,8 +5451,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcca2f3da36ce4ab9b05b4ba26f0f4c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  virtualCamera: {fileID: 1972840888}
-  screenShakes:
+  _virtualCamera: {fileID: 1972840888}
+  _screenShakes:
   - name: Normal Shake
     shakeDuration: 0.3
     shakeAmplitude: 1.2
@@ -5673,22 +5657,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbc60a21e777744cba81df3fa8feb0e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 1635865770}
-  animations:
-  - name: Platform On
-    sprites:
-    - {fileID: -3932816638193255715, guid: 60459dc5eb0ef42f39be2477b7e1b3da, type: 3}
-    - {fileID: 113249620649802049, guid: 60459dc5eb0ef42f39be2477b7e1b3da, type: 3}
-    - {fileID: -3965723481977160693, guid: 60459dc5eb0ef42f39be2477b7e1b3da, type: 3}
-    - {fileID: -8422671310359681190, guid: 60459dc5eb0ef42f39be2477b7e1b3da, type: 3}
-    - {fileID: 6027122724756182200, guid: 60459dc5eb0ef42f39be2477b7e1b3da, type: 3}
-    - {fileID: 3059113826426795209, guid: 60459dc5eb0ef42f39be2477b7e1b3da, type: 3}
-    - {fileID: 4722360788381041880, guid: 60459dc5eb0ef42f39be2477b7e1b3da, type: 3}
-    - {fileID: -7345710839297778315, guid: 60459dc5eb0ef42f39be2477b7e1b3da, type: 3}
-    fps: 80
-    flipX: 0
-    flipY: 0
-  playOnStart: 1
+  _spriteRenderer: {fileID: 0}
+  _animations: []
+  _playOnStart: 0
 --- !u!61 &530943722
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -11408,22 +11379,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbc60a21e777744cba81df3fa8feb0e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 845518482}
-  animations:
-  - name: Platform On
-    sprites:
-    - {fileID: -3932816638193255715, guid: 60459dc5eb0ef42f39be2477b7e1b3da, type: 3}
-    - {fileID: 113249620649802049, guid: 60459dc5eb0ef42f39be2477b7e1b3da, type: 3}
-    - {fileID: -3965723481977160693, guid: 60459dc5eb0ef42f39be2477b7e1b3da, type: 3}
-    - {fileID: -8422671310359681190, guid: 60459dc5eb0ef42f39be2477b7e1b3da, type: 3}
-    - {fileID: 6027122724756182200, guid: 60459dc5eb0ef42f39be2477b7e1b3da, type: 3}
-    - {fileID: 3059113826426795209, guid: 60459dc5eb0ef42f39be2477b7e1b3da, type: 3}
-    - {fileID: 4722360788381041880, guid: 60459dc5eb0ef42f39be2477b7e1b3da, type: 3}
-    - {fileID: -7345710839297778315, guid: 60459dc5eb0ef42f39be2477b7e1b3da, type: 3}
-    fps: 80
-    flipX: 0
-    flipY: 0
-  playOnStart: 1
+  _spriteRenderer: {fileID: 0}
+  _animations: []
+  _playOnStart: 0
 --- !u!61 &1663525929
 BoxCollider2D:
   m_ObjectHideFlags: 0
