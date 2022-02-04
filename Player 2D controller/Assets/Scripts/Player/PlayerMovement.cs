@@ -196,6 +196,29 @@ public class PlayerMovement : MonoBehaviour
             _canWallJump = true;
     }
 
+    private void Jump()
+    {
+        var downColl = playerCollision.DownCollision.Colliding;
+
+        CoyoteJump();
+        JumpBuffer();
+        HandleLanding();
+
+        if (CanJump() && (downColl || CanCoyoteJump()))
+        {
+            OnJump.Invoke();
+        }
+
+        if (CanJump() && downColl)
+            _verticalSpeed = _maxJumpSpeed;
+
+        if (CanJump() && CanCoyoteJump())
+        {
+            _verticalSpeed = _maxJumpSpeed;
+            _coyoteJumpTimeLeft = 0;
+        }
+    }
+
     private void OnJumpReleased()
     {
         if(_verticalSpeed > _minJumpSpeed)
@@ -245,29 +268,6 @@ public class PlayerMovement : MonoBehaviour
         {
             OnLand?.Invoke();
             _canLand = false;
-        }
-    }
-
-    private void Jump()
-    {
-        var downColl = playerCollision.DownCollision.Colliding;
-
-        CoyoteJump();
-        JumpBuffer();
-        HandleLanding();
-
-        if (CanJump() && (downColl || CanCoyoteJump()))
-        {
-            OnJump.Invoke();
-        }
-
-        if (CanJump() && downColl)
-            _verticalSpeed = _maxJumpSpeed;
-
-        if (CanJump() && CanCoyoteJump())
-        {
-            _verticalSpeed = _maxJumpSpeed;
-            _coyoteJumpTimeLeft = 0;
         }
     }
 
@@ -467,6 +467,7 @@ public class PlayerMovement : MonoBehaviour
         var rawVelocity = platform.GetRawVelocity();
         _externalHorizontalSpeed = rawVelocity.x;
         _externalVerticalSpeed = _rawMovement.y;
+        _canLand = false;
         return;
     }
 
