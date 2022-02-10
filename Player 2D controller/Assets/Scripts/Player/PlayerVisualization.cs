@@ -6,7 +6,7 @@ public class PlayerVisualization : MonoBehaviour
 {
     [SerializeField] private ParticleSystem _walkParticles;
     [SerializeField] private ParticleSystem _jumpParticles;
-    [SerializeField] private float _walkSoundDelay = 0.5f;
+    [SerializeField] private float _walkSoundDelay = 0.25f;
 
     private string _currentAnimation;
     private string _lastAnimation;

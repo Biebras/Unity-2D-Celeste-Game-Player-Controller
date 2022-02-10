@@ -61,15 +61,15 @@ public class PlayerCollision : MonoBehaviour
     [Range(0.1f, 0.5f)]
     [SerializeField] private float _skinWidth = 0.15f;
     [Range(2, 10)]
-    [SerializeField] private int _rayCount = 2;
+    [SerializeField] private int _rayCount = 3;
     [Range(0.2f, 5)]
     [SerializeField] private float _horizontalMinRayLength = 0.3f;
     [Range(0.2f, 5)]
-    [SerializeField] private float _verticallMinRayLength = 1f;
+    [SerializeField] private float _verticallMinRayLength = 0.3f;
     [Range(0.05f, 2)]
     [SerializeField] private float _rayLengthModifier = 0.05f;
-    [SerializeField] private float _dashHitRadius = 0.5f;
-    [SerializeField] private float _platformCollRadius = 1f;
+    [SerializeField] private float _dashHitRadius = 0.25f;
+    [SerializeField] private float _platformCollRadius = 0.8f;
     [SerializeField] private float _deffaultColRadius = 0.5f;
     [SerializeField] private LayerMask _collisionMask;
     [SerializeField] private LayerMask _platformMask;

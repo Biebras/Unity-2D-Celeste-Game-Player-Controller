@@ -24,22 +24,22 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _deceleration = 90;
 
     [Header("Jumping")]
-    [SerializeField] private float _maxJumpHeight = 5;
-    [SerializeField] private float _minJumpHeight = 1.7f;
+    [SerializeField] private float _maxJumpHeight = 3;
+    [SerializeField] private float _minJumpHeight = 1.2f;
     [SerializeField] private float _timeToJumpApex = .3f;
-    [SerializeField] private float _jumpBuffer = 0.2f;
-    [SerializeField] private float _coyoteJump = 0.09f;
+    [SerializeField] private float _jumpBuffer = 0.1f;
+    [SerializeField] private float _coyoteJump = 0.1f;
 
     [Header("Wall")]
     [SerializeField] private float _wallSlide = 6;
-    [SerializeField] private float _wallClimb = 3f;
-    [SerializeField] private float _wallStickTime = 0.2f;
+    [SerializeField] private float _wallClimb = 3.5f;
+    [SerializeField] private float _wallStickTime = 0.3f;
 
     [Header("Wall Grabed")]
-    [SerializeField] private float _wallGrabTime = 5;
+    [SerializeField] private float _wallGrabTime = 4;
     [SerializeField] private float _grabDistance = 0.2f;
     [SerializeField] private float _wallGrabJumpApexTime = 0.15f;
-    [SerializeField] private Vector2 _topEdgeClimbJump = new Vector2(8, 12);
+    [SerializeField] private Vector2 _topEdgeClimbJump = new Vector2(6, 10);
     [SerializeField] private Vector2 _wallJump = new Vector2(12, 30);
 
     [Header("Dash")]
@@ -48,7 +48,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _ySpeedAdterDash = 10;
 
     [Header("Falling")]
-    [SerializeField] private float _minFallSpeed = 0;
+    [SerializeField] private float _minFallSpeed = 8;
     [SerializeField] private float _maxFallSpeed = 40;
 
     private Vector2 _velocity;
