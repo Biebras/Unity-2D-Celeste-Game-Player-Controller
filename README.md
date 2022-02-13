@@ -17,7 +17,7 @@ Dash: X
 
 Grab: Z
 
-![Uploading Screen Recording 2022-02-08 at 11.10.23 (online-video-cutter.com) (1).gif…]()
+![Screen Recording 2022-02-08 at 11 10 23 (online-video-cutter com) (1)](https://user-images.githubusercontent.com/49594342/153760452-e25b5cd1-95da-4343-99a7-ad888055650a.gif)
 
 ## Important
 To make the controller work, you have to install a new Input system! You can install it in the package manager window (Window >> Package Manager).
